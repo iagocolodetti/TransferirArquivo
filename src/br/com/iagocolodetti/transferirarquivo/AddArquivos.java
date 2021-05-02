@@ -17,7 +17,13 @@
  */
 package br.com.iagocolodetti.transferirarquivo;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ImageIcon;
@@ -36,24 +42,24 @@ public class AddArquivos extends javax.swing.JFrame {
     private MainGUI mainGUI = null;
     private String lado = null;
     private List<File> arquivosSelecionados = null;
-    private List<File> arquivos = null;
+    private List<File> _arquivos = null;
     private long tamanhoTotal = 0;
     private String ultDir = "";
-    
+
     private final DefaultTableModel model;
-    
+
     private void adicionarArquivos() {
         if (arquivosSelecionados != null && !arquivosSelecionados.isEmpty()) {
             for (File arquivo : arquivosSelecionados) {
-                if (!arquivos.contains(arquivo)) {
-                    arquivos.add(arquivo);
+                if (!_arquivos.contains(arquivo)) {
+                    _arquivos.add(arquivo);
                     String tipo = cbTamanhoTotal.getSelectedItem().toString();
                     model.addRow(new Object[]{arquivo.getName(), Util.calcularTamanho(tipo, arquivo.length()) + " " + tipo});
                     tbArquivos.changeSelection(tbArquivos.getRowCount() - 1, 0, false, false);
                     tamanhoTotal += arquivo.length();
                     tfTamanhoTotal.setText(Util.calcularTamanho(tipo, tamanhoTotal));
                 } else {
-                    Util.msgBoxErro(rootPane, "Esse arquivo já foi adicionado à lista.");
+                    Util.msgBoxErro(rootPane, "O arquivo \"" + arquivo.getName() + "\" já foi adicionado à lista.");
                 }
             }
             tfArquivo.setText("");
@@ -61,29 +67,32 @@ public class AddArquivos extends javax.swing.JFrame {
             arquivosSelecionados.clear();
         }
     }
-    
-    private void removerArquivo() {
-        int index = tbArquivos.getSelectedRow();
-        if (index > -1) {
-            tamanhoTotal -= arquivos.get(index).length();
-            arquivos.remove(index);
-            model.removeRow(index);
-            if (index == 0 && tbArquivos.getRowCount() > 0) {
-                tbArquivos.changeSelection(index, 0, false, false);
-            } else if (index > 0) {
-                tbArquivos.changeSelection(index - 1, 0, false, false);
+
+    private void removerArquivos() {
+        int[] rows = tbArquivos.getSelectedRows();
+        for (int i = 0; i < rows.length; i++) {
+            int index = rows[i] - i;
+            if (index > -1) {
+                tamanhoTotal -= _arquivos.get(index).length();
+                _arquivos.remove(index);
+                model.removeRow(index);
+                if (index == 0 && tbArquivos.getRowCount() > 0) {
+                    tbArquivos.changeSelection(index, 0, false, false);
+                } else if (index > 0) {
+                    tbArquivos.changeSelection(index - 1, 0, false, false);
+                }
+                tfTamanhoTotal.setText(Util.calcularTamanho(cbTamanhoTotal.getSelectedItem().toString(), tamanhoTotal));
             }
-            tfTamanhoTotal.setText(Util.calcularTamanho(cbTamanhoTotal.getSelectedItem().toString(), tamanhoTotal));
         }
     }
-    
+
     private void removerTodosArquivos() {
-        arquivos.clear();
+        _arquivos.clear();
         model.setRowCount(0);
         tamanhoTotal = 0;
         tfTamanhoTotal.setText("");
     }
-    
+
     /**
      * Creates new form AddArquivos
      */
@@ -91,21 +100,49 @@ public class AddArquivos extends javax.swing.JFrame {
         initComponents();
         model = (DefaultTableModel) tbArquivos.getModel();
     }
-    
+
     public AddArquivos(MainGUI mainGUI, String lado, List<File> arquivos, String ultDir) {
         initComponents();
         model = (DefaultTableModel) tbArquivos.getModel();
         this.mainGUI = mainGUI;
         this.lado = lado;
-        this.arquivos = new ArrayList<>();
+        _arquivos = new ArrayList<>();
         arquivosSelecionados = new ArrayList<>();
         this.ultDir = ultDir;
         if (arquivos != null && !arquivos.isEmpty()) {
             arquivosSelecionados = arquivos;
             adicionarArquivos();
         }
+        tbArquivos.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent dtde) {
+                try {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    List droppedFiles = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    if (droppedFiles.size() > 0) {
+                        for (Object object : droppedFiles) {
+                            if (object instanceof File) {
+                                File arquivo = (File) object;
+                                if (!_arquivos.contains(arquivo)) {
+                                    _arquivos.add(arquivo);
+                                    String tipo = cbTamanhoTotal.getSelectedItem().toString();
+                                    model.addRow(new Object[]{arquivo.getName(), Util.calcularTamanho(tipo, arquivo.length()) + " " + tipo});
+                                    tbArquivos.changeSelection(tbArquivos.getRowCount() - 1, 0, false, false);
+                                    tamanhoTotal += arquivo.length();
+                                    tfTamanhoTotal.setText(Util.calcularTamanho(tipo, tamanhoTotal));
+                                } else {
+                                    Util.msgBoxErro(rootPane, "O arquivo \"" + arquivo.getName() + "\" já foi adicionado à lista.");
+                                }
+                            }
+                        }
+                    }
+                } catch (UnsupportedFlavorException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -203,8 +240,9 @@ public class AddArquivos extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
+        tbArquivos.setFillsViewportHeight(true);
         tbArquivos.setRowHeight(26);
-        tbArquivos.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tbArquivos.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         tbArquivos.getTableHeader().setReorderingAllowed(false);
         jScrollPane1.setViewportView(tbArquivos);
         if (tbArquivos.getColumnModel().getColumnCount() > 0) {
@@ -218,7 +256,7 @@ public class AddArquivos extends javax.swing.JFrame {
         jScrollPane1.getViewport().setBackground(java.awt.Color.WHITE);
 
         btRemover.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        btRemover.setText("Remover Arquivo Selecionado");
+        btRemover.setText("Remover Arquivo(s) Selecionado(s)");
         btRemover.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btRemoverActionPerformed(evt);
@@ -294,16 +332,16 @@ public class AddArquivos extends javax.swing.JFrame {
                         .addComponent(tfTamanhoTotal)
                         .addGap(18, 18, 18)
                         .addComponent(cbTamanhoTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btCancelar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btConfirmar, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btRemover, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btRemoverTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(btRemoverTodos, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -385,26 +423,26 @@ public class AddArquivos extends javax.swing.JFrame {
     }//GEN-LAST:event_btAdicionarActionPerformed
 
     private void btRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btRemoverActionPerformed
-        removerArquivo();
+        removerArquivos();
     }//GEN-LAST:event_btRemoverActionPerformed
 
     private void cbTamanhoTotalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbTamanhoTotalActionPerformed
-        if (!arquivos.isEmpty()) {
+        if (!_arquivos.isEmpty()) {
             String tipo = cbTamanhoTotal.getSelectedItem().toString();
             for (int i = 0; i < model.getRowCount(); i++) {
-                model.setValueAt(Util.calcularTamanho(tipo, arquivos.get(i).length()) + " " + tipo, i, 1);
+                model.setValueAt(Util.calcularTamanho(tipo, _arquivos.get(i).length()) + " " + tipo, i, 1);
             }
             tfTamanhoTotal.setText(Util.calcularTamanho(tipo, tamanhoTotal));
         }
     }//GEN-LAST:event_cbTamanhoTotalActionPerformed
 
     private void btConfirmarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btConfirmarActionPerformed
-        if (arquivos.size() > 1) {
+        if (_arquivos.size() > 1) {
             if (lado.equals("sv")) {
-                mainGUI.svAddArquivos(arquivos, tamanhoTotal);
+                mainGUI.svAddArquivos(_arquivos, tamanhoTotal);
                 mainGUI.svSetUltDir(ultDir);
             } else if (lado.equals("cl")) {
-                mainGUI.clAddArquivos(arquivos, tamanhoTotal);
+                mainGUI.clAddArquivos(_arquivos, tamanhoTotal);
                 mainGUI.clSetUltDir(ultDir);
             }
             this.dispose();

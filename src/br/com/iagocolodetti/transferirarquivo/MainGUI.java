@@ -20,6 +20,11 @@ package br.com.iagocolodetti.transferirarquivo;
 import br.com.iagocolodetti.transferirarquivo.exception.ClienteConectarException;
 import br.com.iagocolodetti.transferirarquivo.exception.EnviarArquivoException;
 import br.com.iagocolodetti.transferirarquivo.exception.ServidorLigarException;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDropEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileReader;
@@ -53,7 +58,7 @@ public class MainGUI extends javax.swing.JFrame {
     private List<File> clArquivos = null;
     private long clTamanhoTotal = 0;
     private String clUltDir = "";
-    
+
     private void resetarPropriedades() {
         try {
             Properties p = new Properties();
@@ -71,7 +76,7 @@ public class MainGUI extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
+
     private void carregarPropriedades() {
         try {
             if (new File(ARQUIVO_PROPERTIES).exists()) {
@@ -94,7 +99,7 @@ public class MainGUI extends javax.swing.JFrame {
             e.printStackTrace();
         }
     }
-    
+
     private void salvarPropriedades() {
         try {
             Properties p = new Properties();
@@ -122,11 +127,11 @@ public class MainGUI extends javax.swing.JFrame {
             svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
         }
     }
-    
+
     public void svSetUltDir(String ultDir) {
         this.svUltDir = ultDir;
     }
-    
+
     public void svAddAreaTextLog(String mensagem) {
         if (!svTALog.getText().isEmpty()) {
             svTALog.append("\n");
@@ -168,7 +173,7 @@ public class MainGUI extends javax.swing.JFrame {
             Util.msgBoxErro(rootPane, "Defina o número da porta.");
         }
     }
-    
+
     public void svLigando() {
         svBtLigar.setText("LIGANDO");
         svTfPorta.setEditable(false);
@@ -202,11 +207,11 @@ public class MainGUI extends javax.swing.JFrame {
             clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
         }
     }
-    
+
     public void clSetUltDir(String ultDir) {
         this.clUltDir = ultDir;
     }
-    
+
     public void clAddAreaTextLog(String mensagem) {
         if (!clTALog.getText().isEmpty()) {
             clTALog.append("\n");
@@ -244,7 +249,7 @@ public class MainGUI extends javax.swing.JFrame {
             Util.msgBoxErro(rootPane, "Defina o número da porta.");
         }
     }
-    
+
     public void clConectando() {
         clTfIP.setEditable(false);
         clTfPorta.setEditable(false);
@@ -280,6 +285,70 @@ public class MainGUI extends javax.swing.JFrame {
         DefaultCaret clCaret = (DefaultCaret) clTALog.getCaret();
         clCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
         carregarPropriedades();
+        svTfArquivo.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent dtde) {
+                try {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    List droppedFiles = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    svArquivos.clear();
+                    if (droppedFiles.size() == 1) {
+                        Object object = droppedFiles.get(0);
+                        if (object instanceof File) {
+                            File arquivo = (File) object;
+                            svArquivos.add(arquivo);
+                            svUltDir = arquivo.getParent();
+                            svTfArquivo.setText(svArquivos.get(0).getName());
+                            svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+                        }
+                    } else if (droppedFiles.size() > 1) {
+                        for (Object object : droppedFiles) {
+                            if (object instanceof File) {
+                                File arquivo = (File) object;
+                                svArquivos.add(arquivo);
+                                svTamanhoTotal += arquivo.length();
+                                svTfArquivo.setText("Vários");
+                                svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+                            }
+                        }
+                    }
+                } catch (UnsupportedFlavorException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        clTfArquivo.setDropTarget(new DropTarget() {
+            @Override
+            public synchronized void drop(DropTargetDropEvent dtde) {
+                try {
+                    dtde.acceptDrop(DnDConstants.ACTION_COPY);
+                    List droppedFiles = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                    clArquivos.clear();
+                    if (droppedFiles.size() == 1) {
+                        Object object = droppedFiles.get(0);
+                        if (object instanceof File) {
+                            File arquivo = (File) object;
+                            clArquivos.add(arquivo);
+                            clUltDir = arquivo.getParent();
+                            clTfArquivo.setText(svArquivos.get(0).getName());
+                            clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+                        }
+                    } else if (droppedFiles.size() > 1) {
+                        for (Object object : droppedFiles) {
+                            if (object instanceof File) {
+                                File arquivo = (File) object;
+                                clArquivos.add(arquivo);
+                                clTamanhoTotal += arquivo.length();
+                                clTfArquivo.setText("Vários");
+                                clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+                            }
+                        }
+                    }
+                } catch (UnsupportedFlavorException | IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     /**
@@ -918,7 +987,7 @@ public class MainGUI extends javax.swing.JFrame {
                 new AddArquivos(this, "cl", clArquivos, clUltDir).setVisible(true);
             }
         } else {
-           Util.msgBoxErro(rootPane, "O cliente ainda está enviando arquivos, aguarde o termino da operação atual.");
+            Util.msgBoxErro(rootPane, "O cliente ainda está enviando arquivos, aguarde o termino da operação atual.");
         }
     }//GEN-LAST:event_clBtSelecionarActionPerformed
 
