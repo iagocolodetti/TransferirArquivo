@@ -54,12 +54,12 @@ public class AddArquivos extends javax.swing.JFrame {
                 if (!_arquivos.contains(arquivo)) {
                     _arquivos.add(arquivo);
                     String tipo = cbTamanhoTotal.getSelectedItem().toString();
-                    model.addRow(new Object[]{arquivo.getName(), Util.calcularTamanho(tipo, arquivo.length()) + " " + tipo});
+                    model.addRow(new Object[]{arquivo.getName(), Utils.calcularTamanho(tipo, arquivo.length()) + " " + tipo});
                     tbArquivos.changeSelection(tbArquivos.getRowCount() - 1, 0, false, false);
                     tamanhoTotal += arquivo.length();
-                    tfTamanhoTotal.setText(Util.calcularTamanho(tipo, tamanhoTotal));
+                    tfTamanhoTotal.setText(Utils.calcularTamanho(tipo, tamanhoTotal));
                 } else {
-                    Util.msgBoxErro(rootPane, "O arquivo \"" + arquivo.getName() + "\" já foi adicionado à lista.");
+                    Utils.msgBoxErro(rootPane, "O arquivo \"" + arquivo.getName() + "\" já foi adicionado à lista.");
                 }
             }
             tfArquivo.setText("");
@@ -81,7 +81,7 @@ public class AddArquivos extends javax.swing.JFrame {
                 } else if (index > 0) {
                     tbArquivos.changeSelection(index - 1, 0, false, false);
                 }
-                tfTamanhoTotal.setText(Util.calcularTamanho(cbTamanhoTotal.getSelectedItem().toString(), tamanhoTotal));
+                tfTamanhoTotal.setText(Utils.calcularTamanho(cbTamanhoTotal.getSelectedItem().toString(), tamanhoTotal));
             }
         }
     }
@@ -126,18 +126,18 @@ public class AddArquivos extends javax.swing.JFrame {
                                 if (!_arquivos.contains(arquivo)) {
                                     _arquivos.add(arquivo);
                                     String tipo = cbTamanhoTotal.getSelectedItem().toString();
-                                    model.addRow(new Object[]{arquivo.getName(), Util.calcularTamanho(tipo, arquivo.length()) + " " + tipo});
+                                    model.addRow(new Object[]{arquivo.getName(), Utils.calcularTamanho(tipo, arquivo.length()) + " " + tipo});
                                     tbArquivos.changeSelection(tbArquivos.getRowCount() - 1, 0, false, false);
                                     tamanhoTotal += arquivo.length();
-                                    tfTamanhoTotal.setText(Util.calcularTamanho(tipo, tamanhoTotal));
+                                    tfTamanhoTotal.setText(Utils.calcularTamanho(tipo, tamanhoTotal));
                                 } else {
-                                    Util.msgBoxErro(rootPane, "O arquivo \"" + arquivo.getName() + "\" já foi adicionado à lista.");
+                                    Utils.msgBoxErro(rootPane, "O arquivo \"" + arquivo.getName() + "\" já foi adicionado à lista.");
                                 }
                             }
                         }
                     }
-                } catch (UnsupportedFlavorException | IOException e) {
-                    e.printStackTrace();
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -388,7 +388,7 @@ public class AddArquivos extends javax.swing.JFrame {
             for (File arquivo : arquivosSelecionados) {
                 tamanho += arquivo.length();
             }
-            tfTamanho.setText(Util.calcularTamanho(cbTipo.getSelectedItem().toString(), tamanho));
+            tfTamanho.setText(Utils.calcularTamanho(cbTipo.getSelectedItem().toString(), tamanho));
         }
     }//GEN-LAST:event_cbTipoActionPerformed
 
@@ -411,10 +411,10 @@ public class AddArquivos extends javax.swing.JFrame {
                 }
                 ultDir = chooser.getSelectedFile().getParent();
                 tfArquivo.setText((arquivosSelecionados.size() == 1 ? arquivosSelecionados.get(0).getName() : "Vários"));
-                tfTamanho.setText(Util.calcularTamanho(cbTipo.getSelectedItem().toString(), tamanho));
+                tfTamanho.setText(Utils.calcularTamanho(cbTipo.getSelectedItem().toString(), tamanho));
             }
-        } catch (IndexOutOfBoundsException e) {
-            e.printStackTrace();
+        } catch (IndexOutOfBoundsException ex) {
+            ex.printStackTrace();
         }
     }//GEN-LAST:event_btSelecionarActionPerformed
 
@@ -430,9 +430,9 @@ public class AddArquivos extends javax.swing.JFrame {
         if (!_arquivos.isEmpty()) {
             String tipo = cbTamanhoTotal.getSelectedItem().toString();
             for (int i = 0; i < model.getRowCount(); i++) {
-                model.setValueAt(Util.calcularTamanho(tipo, _arquivos.get(i).length()) + " " + tipo, i, 1);
+                model.setValueAt(Utils.calcularTamanho(tipo, _arquivos.get(i).length()) + " " + tipo, i, 1);
             }
-            tfTamanhoTotal.setText(Util.calcularTamanho(tipo, tamanhoTotal));
+            tfTamanhoTotal.setText(Utils.calcularTamanho(tipo, tamanhoTotal));
         }
     }//GEN-LAST:event_cbTamanhoTotalActionPerformed
 
@@ -448,7 +448,7 @@ public class AddArquivos extends javax.swing.JFrame {
             this.dispose();
             mainGUI.setVisible(true);
         } else {
-            Util.msgBoxErro(rootPane, "Adicione pelo menos 2 (dois) arquivos.");
+            Utils.msgBoxErro(rootPane, "Adicione pelo menos 2 (dois) arquivos.");
         }
     }//GEN-LAST:event_btConfirmarActionPerformed
 
@@ -504,8 +504,8 @@ public class AddArquivos extends javax.swing.JFrame {
             public void run() {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                    ex.printStackTrace();
                 }
                 new AddArquivos().setVisible(true);
             }

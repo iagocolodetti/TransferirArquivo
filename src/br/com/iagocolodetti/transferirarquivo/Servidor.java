@@ -23,6 +23,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,6 +66,12 @@ public class Servidor {
         }
         if (diretorio.isEmpty()) {
             throw new ServidorLigarException("Selecione um diretório para recebimento de arquivos.", 1);
+        } else {
+            try {
+                new File(diretorio).mkdirs();
+            } catch (SecurityException ex) {
+                throw new ServidorLigarException("O diretório selecionado não existe e não foi possível criá-lo.\nSelecione outro diretório ou tente iniciar a aplicação como administrador.");
+            }
         }
         mainGUI.svLigando();
         Thread t = new Thread(new ServidorLigar(porta, diretorio));
@@ -80,8 +87,8 @@ public class Servidor {
             if (serverSocket != null && !serverSocket.isClosed()) {
                 serverSocket.close();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         } finally {
             serverSocket = null;
             socket = null;
@@ -114,8 +121,8 @@ public class Servidor {
     private void esperar(int ms) {
         try {
             Thread.sleep(ms);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -135,29 +142,29 @@ public class Servidor {
             try {
                 serverSocket = new ServerSocket(porta, 1, InetAddress.getLocalHost());
                 mainGUI.svLigado(serverSocket.getInetAddress().getHostAddress());
-            } catch (IllegalArgumentException | IOException e) {
-                Util.msgBoxErro(mainGUI, "Não foi possível iniciar o servidor nessa porta.");
+            } catch (IllegalArgumentException | IOException ex) {
+                Utils.msgBoxErro(mainGUI, "Não foi possível iniciar o servidor nessa porta.");
                 desligar();
-                e.printStackTrace();
+                ex.printStackTrace();
             }
             while (ligado) {
                 try {
                     recebendoArquivo = false;
                     socket = serverSocket.accept();
                     mainGUI.svSetCliente(socket.getRemoteSocketAddress().toString().replace("/", "").replace(socket.getRemoteSocketAddress().toString().substring(socket.getRemoteSocketAddress().toString().indexOf(":")), ""));
-                } catch (IOException e) {
+                } catch (IOException ex) {
                     if (ligado) {
-                        Util.msgBoxErro(mainGUI, "Não foi possível aceitar a conexão com o cliente.");
-                        e.printStackTrace();
+                        Utils.msgBoxErro(mainGUI, "Não foi possível aceitar a conexão com o cliente.");
+                        ex.printStackTrace();
                     }
                 }
                 if (ligado) {
-                    InputStream in = null;
+                    InputStream is = null;
                     DataInputStream dis = null;
                     OutputStream out = null;
                     try {
-                        in = socket.getInputStream();
-                        dis = new DataInputStream(in);
+                        is = socket.getInputStream();
+                        dis = new DataInputStream(is);
                         String[] data = dis.readUTF().split(Pattern.quote("|"));
                         recebendoArquivo = true;
                         esperar(1000);
@@ -168,7 +175,7 @@ public class Servidor {
                         long tamanho = Long.parseLong(data[1]);
                         long tamanhokb = (data[1].equals("0") ? 1 : (tamanho / 1024));
                         tamanhokb = (tamanhokb == 0 ? 1 : tamanhokb);
-                        in = socket.getInputStream();
+                        is = socket.getInputStream();
                         out = new FileOutputStream(diretorio + novoNomeArquivo);
                         mainGUI.svSetStatus("Recebendo Arquivo");
                         mainGUI.svAddAreaTextLog("Recebendo Arquivo: \"" + novoNomeArquivo + "\".");
@@ -178,7 +185,7 @@ public class Servidor {
                         int count;
                         long kb = 0;
                         int progresso;
-                        while ((count = in.read(buffer)) > 0) {
+                        while ((count = is.read(buffer)) > 0) {
                             out.write(buffer, 0, count);
                             bytesRecebidos += count;
                             progresso = (int)(++kb * 100 / tamanhokb);
@@ -188,20 +195,26 @@ public class Servidor {
                             mainGUI.svAddAreaTextLog("Arquivo \"" + novoNomeArquivo + "\" recebido com sucesso.");
                         } else {
                             mainGUI.svAddAreaTextLog("Arquivo \"" + novoNomeArquivo + "\" corrompido durante o recebimento.");
-                            Util.msgBoxErro(mainGUI, "Conexão com o cliente perdida.");
+                            Utils.msgBoxErro(mainGUI, "Conexão com o cliente perdida.");
                         }
-                    } catch (IOException e) {
+                    } catch (FileNotFoundException ex) {
                         if (ligado && !enviandoArquivos()) {
-                            Util.msgBoxErro(mainGUI, "Conexão com o cliente perdida.");
-                            e.printStackTrace();
+                            desligar();
+                            Utils.msgBoxErro(mainGUI, "O diretório selecionado não foi encontrado.");
+                            ex.printStackTrace();
+                        }
+                    } catch (IOException ex) {
+                        if (ligado && !enviandoArquivos()) {
+                            Utils.msgBoxErro(mainGUI, "Conexão com o cliente perdida.");
+                            ex.printStackTrace();
                         }
                     } finally {
                         try {
                             if (out != null) {
                                 out.close();
                             }
-                            if (in != null) {
-                                in.close();
+                            if (is != null) {
+                                is.close();
                             }
                             if (dis != null) {
                                 dis.close();
@@ -209,8 +222,8 @@ public class Servidor {
                             if (socket != null) {
                                 socket.close();
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         } finally {
                             mainGUI.svSetCliente("");
                             mainGUI.svSetStatus("");
@@ -240,7 +253,7 @@ public class Servidor {
                     esperar(AGUARDAR_APOS_ENVIO);
                 }
                 if (loop == AGUARDAR_APOS_ENVIO_LOOP) {
-                    Util.msgBoxErro(mainGUI, "Não foi possível enviar os arquivos restantes.");
+                    Utils.msgBoxErro(mainGUI, "Não foi possível enviar os arquivos restantes.");
                     break;
                 }
                 if (arquivo.exists()) {
@@ -274,10 +287,10 @@ public class Servidor {
                         } else {
                             mainGUI.svAddAreaTextLog("Arquivo \"" + arquivo.getName() + "\" corrompido durante o envio.");
                         }
-                    } catch (IOException e) {
+                    } catch (IOException ex) {
                         if (ligado) {
-                            Util.msgBoxErro(mainGUI, "Conexão com o cliente perdida.");
-                            e.printStackTrace();
+                            Utils.msgBoxErro(mainGUI, "Conexão com o cliente perdida.");
+                            ex.printStackTrace();
                         }
                     } finally {
                         try {
@@ -293,8 +306,8 @@ public class Servidor {
                             if (socket != null) {
                                 socket.close();
                             }
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         } finally {
                             mainGUI.svSetCliente("");
                             mainGUI.svSetStatus("");

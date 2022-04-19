@@ -72,8 +72,8 @@ public class MainGUI extends javax.swing.JFrame {
             p.setProperty("clUltDir", "");
             p.setProperty("clCbLote", "");
             p.store(new FileWriter(ARQUIVO_PROPERTIES), "Arquivo de propriedades");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -94,9 +94,9 @@ public class MainGUI extends javax.swing.JFrame {
             } else {
                 resetarPropriedades();
             }
-        } catch (IOException e) {
+        } catch (IOException ex) {
             resetarPropriedades();
-            e.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
@@ -113,8 +113,8 @@ public class MainGUI extends javax.swing.JFrame {
             p.setProperty("clUltDir", clUltDir);
             p.setProperty("clCbLote", Boolean.toString(clCbLote.isSelected()));
             p.store(new FileWriter(ARQUIVO_PROPERTIES), "Arquivo de propriedades");
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -124,7 +124,7 @@ public class MainGUI extends javax.swing.JFrame {
             this.svArquivos = arquivos;
             svTfArquivo.setText("Vários");
             svTamanhoTotal = tamanhoTotal;
-            svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+            svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
         }
     }
 
@@ -161,16 +161,16 @@ public class MainGUI extends javax.swing.JFrame {
             try {
                 porta = Integer.parseInt(svTfPorta.getText());
                 servidor.ligar(porta, svTfDir.getText());
-            } catch (NumberFormatException e) {
-                Util.msgBoxErro(rootPane, "A porta deve ser definida com número inteiro.");
-            } catch (ServidorLigarException e) {
-                Util.msgBoxErro(rootPane, e.getMessage());
-                if (e.getErrorCode() == 1) {
-                    svTfDir.setText(Util.selecionarDir(this));
+            } catch (NumberFormatException ex) {
+                Utils.msgBoxErro(rootPane, "A porta deve ser definida com número inteiro.");
+            } catch (ServidorLigarException ex) {
+                Utils.msgBoxErro(rootPane, ex.getMessage());
+                if (ex.getErrorCode() == 1) {
+                    svTfDir.setText(Utils.selecionarDir(this));
                 }
             }
         } else {
-            Util.msgBoxErro(rootPane, "Defina o número da porta.");
+            Utils.msgBoxErro(rootPane, "Defina o número da porta.");
         }
     }
 
@@ -204,7 +204,7 @@ public class MainGUI extends javax.swing.JFrame {
             this.clArquivos = arquivos;
             clTfArquivo.setText("Vários");
             clTamanhoTotal = tamanhoTotal;
-            clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+            clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
         }
     }
 
@@ -237,16 +237,16 @@ public class MainGUI extends javax.swing.JFrame {
             try {
                 porta = Integer.parseInt(clTfPorta.getText());
                 cliente.conectar(clTfIP.getText(), porta, clTfDir.getText());
-            } catch (NumberFormatException e) {
-                Util.msgBoxErro(rootPane, "A porta deve ser definida com número inteiro.");
-            } catch (ClienteConectarException e) {
-                Util.msgBoxErro(rootPane, e.getMessage());
-                if (e.getErrorCode() == 1) {
-                    clTfDir.setText(Util.selecionarDir(this));
+            } catch (NumberFormatException ex) {
+                Utils.msgBoxErro(rootPane, "A porta deve ser definida com número inteiro.");
+            } catch (ClienteConectarException ex) {
+                Utils.msgBoxErro(rootPane, ex.getMessage());
+                if (ex.getErrorCode() == 1) {
+                    clTfDir.setText(Utils.selecionarDir(this));
                 }
             }
         } else {
-            Util.msgBoxErro(rootPane, "Defina o número da porta.");
+            Utils.msgBoxErro(rootPane, "Defina o número da porta.");
         }
     }
 
@@ -299,7 +299,7 @@ public class MainGUI extends javax.swing.JFrame {
                             svArquivos.add(arquivo);
                             svUltDir = arquivo.getParent();
                             svTfArquivo.setText(svArquivos.get(0).getName());
-                            svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+                            svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
                         }
                     } else if (droppedFiles.size() > 1) {
                         for (Object object : droppedFiles) {
@@ -308,12 +308,12 @@ public class MainGUI extends javax.swing.JFrame {
                                 svArquivos.add(arquivo);
                                 svTamanhoTotal += arquivo.length();
                                 svTfArquivo.setText("Vários");
-                                svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+                                svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
                             }
                         }
                     }
-                } catch (UnsupportedFlavorException | IOException e) {
-                    e.printStackTrace();
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -330,8 +330,8 @@ public class MainGUI extends javax.swing.JFrame {
                             File arquivo = (File) object;
                             clArquivos.add(arquivo);
                             clUltDir = arquivo.getParent();
-                            clTfArquivo.setText(svArquivos.get(0).getName());
-                            clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+                            clTfArquivo.setText(clArquivos.get(0).getName());
+                            clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
                         }
                     } else if (droppedFiles.size() > 1) {
                         for (Object object : droppedFiles) {
@@ -340,12 +340,12 @@ public class MainGUI extends javax.swing.JFrame {
                                 clArquivos.add(arquivo);
                                 clTamanhoTotal += arquivo.length();
                                 clTfArquivo.setText("Vários");
-                                clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+                                clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
                             }
                         }
                     }
-                } catch (UnsupportedFlavorException | IOException e) {
-                    e.printStackTrace();
+                } catch (UnsupportedFlavorException | IOException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -864,9 +864,9 @@ public class MainGUI extends javax.swing.JFrame {
     private void svCbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_svCbTipoActionPerformed
         if (!svArquivos.isEmpty()) {
             if (svArquivos.size() == 1) {
-                svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+                svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
             } else {
-                svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+                svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
             }
         }
     }//GEN-LAST:event_svCbTipoActionPerformed
@@ -887,17 +887,17 @@ public class MainGUI extends javax.swing.JFrame {
                         svArquivos.add(chooser.getSelectedFile());
                         svUltDir = chooser.getSelectedFile().getParent();
                         svTfArquivo.setText(svArquivos.get(0).getName());
-                        svTfTamanho.setText(Util.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+                        svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    e.printStackTrace();
+                } catch (IndexOutOfBoundsException ex) {
+                    ex.printStackTrace();
                 }
             } else {
                 this.setVisible(false);
                 new AddArquivos(this, "sv", svArquivos, svUltDir).setVisible(true);
             }
         } else {
-            Util.msgBoxErro(rootPane, "O servidor ainda está enviando arquivos, aguarde o termino da operação atual.");
+            Utils.msgBoxErro(rootPane, "O servidor ainda está enviando arquivos, aguarde o termino da operação atual.");
         }
     }//GEN-LAST:event_svBtSelecionarActionPerformed
 
@@ -905,23 +905,23 @@ public class MainGUI extends javax.swing.JFrame {
         if (svBtLigar.getText().equals("DESLIGAR") && !svTfCliente.getText().isEmpty()) {
             try {
                 servidor.enviarArquivos(svArquivos);
-            } catch (EnviarArquivoException e) {
-                Util.msgBoxErro(rootPane, e.getMessage());
+            } catch (EnviarArquivoException ex) {
+                Utils.msgBoxErro(rootPane, ex.getMessage());
             }
         } else {
-            Util.msgBoxErro(rootPane, "O servidor deve estar ligado e um cliente conectado.");
+            Utils.msgBoxErro(rootPane, "O servidor deve estar ligado e um cliente conectado.");
         }
     }//GEN-LAST:event_svBtEnviarActionPerformed
 
     private void svTfDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_svTfDirMouseClicked
         if (svBtLigar.getText().equals("LIGAR")) {
-            svTfDir.setText(Util.selecionarDir(this));
+            svTfDir.setText(Utils.selecionarDir(this));
         }
     }//GEN-LAST:event_svTfDirMouseClicked
 
     private void svTfDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_svTfDirKeyPressed
         if (svBtLigar.getText().equals("LIGAR") && evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            svTfDir.setText(Util.selecionarDir(this));
+            svTfDir.setText(Utils.selecionarDir(this));
         }
     }//GEN-LAST:event_svTfDirKeyPressed
     // </editor-fold>
@@ -933,13 +933,13 @@ public class MainGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Ações para o cliente">
     private void clTfDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clTfDirMouseClicked
         if (clBtConectar.getText().equals("CONECTAR")) {
-            clTfDir.setText(Util.selecionarDir(this));
+            clTfDir.setText(Utils.selecionarDir(this));
         }
     }//GEN-LAST:event_clTfDirMouseClicked
 
     private void clTfDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_clTfDirKeyPressed
         if (clBtConectar.getText().equals("CONECTAR") && evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            clTfDir.setText(Util.selecionarDir(this));
+            clTfDir.setText(Utils.selecionarDir(this));
         }
     }//GEN-LAST:event_clTfDirKeyPressed
 
@@ -954,9 +954,9 @@ public class MainGUI extends javax.swing.JFrame {
     private void clCbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clCbTipoActionPerformed
         if (!clArquivos.isEmpty()) {
             if (clArquivos.size() == 1) {
-                clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+                clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
             } else {
-                clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+                clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
             }
         }
     }//GEN-LAST:event_clCbTipoActionPerformed
@@ -977,17 +977,17 @@ public class MainGUI extends javax.swing.JFrame {
                         clArquivos.add(chooser.getSelectedFile());
                         clUltDir = chooser.getSelectedFile().getParent();
                         clTfArquivo.setText(clArquivos.get(0).getName());
-                        clTfTamanho.setText(Util.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+                        clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
                     }
-                } catch (IndexOutOfBoundsException e) {
-                    e.printStackTrace();
+                } catch (IndexOutOfBoundsException ex) {
+                    ex.printStackTrace();
                 }
             } else {
                 this.setVisible(false);
                 new AddArquivos(this, "cl", clArquivos, clUltDir).setVisible(true);
             }
         } else {
-            Util.msgBoxErro(rootPane, "O cliente ainda está enviando arquivos, aguarde o termino da operação atual.");
+            Utils.msgBoxErro(rootPane, "O cliente ainda está enviando arquivos, aguarde o termino da operação atual.");
         }
     }//GEN-LAST:event_clBtSelecionarActionPerformed
 
@@ -996,10 +996,10 @@ public class MainGUI extends javax.swing.JFrame {
             try {
                 cliente.enviarArquivos(clArquivos);
             } catch (EnviarArquivoException e) {
-                Util.msgBoxErro(rootPane, e.getMessage());
+                Utils.msgBoxErro(rootPane, e.getMessage());
             }
         } else {
-            Util.msgBoxErro(rootPane, "Conecte-se a um servidor.");
+            Utils.msgBoxErro(rootPane, "Conecte-se a um servidor.");
         }
     }//GEN-LAST:event_clBtEnviarActionPerformed
     // </editor-fold>
@@ -1037,8 +1037,8 @@ public class MainGUI extends javax.swing.JFrame {
             public void run() {
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-                    e.printStackTrace();
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+                    ex.printStackTrace();
                 }
                 new MainGUI().setVisible(true);
             }
