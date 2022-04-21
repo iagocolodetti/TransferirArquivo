@@ -17,9 +17,9 @@
  */
 package br.com.iagocolodetti.transferirarquivo;
 
-import br.com.iagocolodetti.transferirarquivo.exception.ClienteConectarException;
-import br.com.iagocolodetti.transferirarquivo.exception.EnviarArquivoException;
-import br.com.iagocolodetti.transferirarquivo.exception.ServidorLigarException;
+import br.com.iagocolodetti.transferirarquivo.exception.ClientConnectException;
+import br.com.iagocolodetti.transferirarquivo.exception.SendFileException;
+import br.com.iagocolodetti.transferirarquivo.exception.ServerStartException;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
@@ -47,227 +47,227 @@ import javax.swing.text.DefaultCaret;
  */
 public class MainGUI extends javax.swing.JFrame {
 
-    private final String ARQUIVO_PROPERTIES = "TransferirArquivo.properties";
+    private final String FILE_PROPERTIES = "TransferirArquivo.properties";
 
-    private Servidor servidor = null;
-    private List<File> svArquivos = null;
-    private long svTamanhoTotal = 0;
-    private String svUltDir = "";
+    private Server server = null;
+    private List<File> srvFiles = null;
+    private long srvTotalSize = 0;
+    private String srvLastDir = "";
 
-    private Cliente cliente = null;
-    private List<File> clArquivos = null;
-    private long clTamanhoTotal = 0;
-    private String clUltDir = "";
+    private Client client = null;
+    private List<File> cltFiles = null;
+    private long cltTotalSize = 0;
+    private String cltLastDir = "";
 
-    private void resetarPropriedades() {
+    private void resetProperties() {
         try {
             Properties p = new Properties();
-            p.setProperty("svPorta", "");
-            p.setProperty("svDir", "");
-            p.setProperty("svUltDir", "");
-            p.setProperty("svCbLote", "");
-            p.setProperty("clIP", "");
-            p.setProperty("clPorta", "");
-            p.setProperty("clDir", "");
-            p.setProperty("clUltDir", "");
-            p.setProperty("clCbLote", "");
-            p.store(new FileWriter(ARQUIVO_PROPERTIES), "Arquivo de propriedades");
+            p.setProperty("srvPort", "");
+            p.setProperty("srvDir", "");
+            p.setProperty("srvLastDir", "");
+            p.setProperty("srvCmbBatch", "");
+            p.setProperty("cltIP", "");
+            p.setProperty("cltPort", "");
+            p.setProperty("cltDir", "");
+            p.setProperty("cltLastDir", "");
+            p.setProperty("cltCmbBatch", "");
+            p.store(new FileWriter(FILE_PROPERTIES), "Properties File");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
-    private void carregarPropriedades() {
+    private void loadProperties() {
         try {
-            if (new File(ARQUIVO_PROPERTIES).exists()) {
+            if (new File(FILE_PROPERTIES).exists()) {
                 Properties p = new Properties();
-                p.load(new FileReader(ARQUIVO_PROPERTIES));
-                svTfPorta.setText(p.getProperty("svPorta"));
-                svTfDir.setText(p.getProperty("svDir"));
-                svUltDir = p.getProperty("svUltDir");
-                svCbLote.setSelected(Boolean.valueOf(p.getProperty("svCbLote")));
-                clTfIP.setText(p.getProperty("clIP"));
-                clTfPorta.setText(p.getProperty("clPorta"));
-                clTfDir.setText(p.getProperty("clDir"));
-                clUltDir = p.getProperty("clUltDir");
-                clCbLote.setSelected(Boolean.valueOf(p.getProperty("clCbLote")));
+                p.load(new FileReader(FILE_PROPERTIES));
+                srvTxtPort.setText(p.getProperty("srvPort"));
+                srvTxtDir.setText(p.getProperty("srvDir"));
+                srvLastDir = p.getProperty("srvLastDir");
+                srvChkBatch.setSelected(Boolean.valueOf(p.getProperty("srvCmbBatch")));
+                cltTxtIP.setText(p.getProperty("cltIP"));
+                cltTxtPort.setText(p.getProperty("cltPort"));
+                cltTxtDir.setText(p.getProperty("cltDir"));
+                cltLastDir = p.getProperty("cltLastDir");
+                cltChkBatch.setSelected(Boolean.valueOf(p.getProperty("cltCmbBatch")));
             } else {
-                resetarPropriedades();
+                resetProperties();
             }
         } catch (IOException ex) {
-            resetarPropriedades();
+            resetProperties();
             ex.printStackTrace();
         }
     }
 
-    private void salvarPropriedades() {
+    private void saveProperties() {
         try {
             Properties p = new Properties();
-            p.setProperty("svPorta", svTfPorta.getText());
-            p.setProperty("svDir", svTfDir.getText());
-            p.setProperty("svUltDir", svUltDir);
-            p.setProperty("svCbLote", Boolean.toString(svCbLote.isSelected()));
-            p.setProperty("clIP", clTfIP.getText());
-            p.setProperty("clPorta", clTfPorta.getText());
-            p.setProperty("clDir", clTfDir.getText());
-            p.setProperty("clUltDir", clUltDir);
-            p.setProperty("clCbLote", Boolean.toString(clCbLote.isSelected()));
-            p.store(new FileWriter(ARQUIVO_PROPERTIES), "Arquivo de propriedades");
+            p.setProperty("srvPort", srvTxtPort.getText());
+            p.setProperty("srvDir", srvTxtDir.getText());
+            p.setProperty("srvLastDir", srvLastDir);
+            p.setProperty("srvCmbBatch", Boolean.toString(srvChkBatch.isSelected()));
+            p.setProperty("cltIP", cltTxtIP.getText());
+            p.setProperty("cltPort", cltTxtPort.getText());
+            p.setProperty("cltDir", cltTxtDir.getText());
+            p.setProperty("cltLastDir", cltLastDir);
+            p.setProperty("cltCmbBatch", Boolean.toString(cltChkBatch.isSelected()));
+            p.store(new FileWriter(FILE_PROPERTIES), "Properties File");
         } catch (IOException ex) {
             ex.printStackTrace();
         }
     }
 
     // <editor-fold defaultstate="collapsed" desc="Métodos para o servidor">
-    public void svAddArquivos(List<File> arquivos, long tamanhoTotal) {
-        if (arquivos != null && !arquivos.isEmpty()) {
-            this.svArquivos = arquivos;
-            svTfArquivo.setText("Vários");
-            svTamanhoTotal = tamanhoTotal;
-            svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+    public void srvAddFiles(List<File> files, long totalSize) {
+        if (files != null && !files.isEmpty()) {
+            this.srvFiles = files;
+            srvTxtFile.setText("Vários");
+            srvTotalSize = totalSize;
+            srvTxtSize.setText(Utils.bytesTo(srvTotalSize, srvCmbBytes.getSelectedItem().toString()));
         }
     }
 
-    public void svSetUltDir(String ultDir) {
-        this.svUltDir = ultDir;
+    public void srvSetLastDir(String lastDir) {
+        this.srvLastDir = lastDir;
     }
 
-    public void svAddAreaTextLog(String mensagem) {
-        if (!svTALog.getText().isEmpty()) {
-            svTALog.append("\n");
+    public void srvAddTextAreaLog(String message) {
+        if (!srvTxaLog.getText().isEmpty()) {
+            srvTxaLog.append("\n");
         }
-        svTALog.append(String.format("[%s] %s", new SimpleDateFormat("HH:mm:ss").format(new Date()), mensagem));
+        srvTxaLog.append(String.format("[%s] %s", new SimpleDateFormat("HH:mm:ss").format(new Date()), message));
     }
 
-    public void svSetCliente(String IP) {
-        svTfCliente.setText(IP);
+    public void srvSetClient(String ip) {
+        srvTxtClient.setText(ip);
     }
 
-    public void svSetStatus(String status) {
-        svTfStatus.setText(status);
+    public void srvSetStatus(String status) {
+        srvTxtStatus.setText(status);
     }
 
-    public void svSetProgressPainted(boolean painted) {
-        svPb.setStringPainted(painted);
+    public void srvSetProgressPainted(boolean painted) {
+        srvPrg.setStringPainted(painted);
     }
 
-    public void svSetProgress(int valor) {
-        svPb.setValue(valor);
+    public void srvSetProgress(int value) {
+        srvPrg.setValue(value);
     }
 
-    private void svLigar() {
-        if (!svTfPorta.getText().isEmpty()) {
-            int porta;
+    private void srvStart() {
+        if (!srvTxtPort.getText().isEmpty()) {
+            int port;
             try {
-                porta = Integer.parseInt(svTfPorta.getText());
-                servidor.ligar(porta, svTfDir.getText());
+                port = Integer.parseInt(srvTxtPort.getText());
+                server.start(port, srvTxtDir.getText());
             } catch (NumberFormatException ex) {
-                Utils.msgBoxErro(rootPane, "A porta deve ser definida com número inteiro.");
-            } catch (ServidorLigarException ex) {
-                Utils.msgBoxErro(rootPane, ex.getMessage());
+                Utils.msgBoxError(rootPane, "A porta deve ser definida com número inteiro.");
+            } catch (ServerStartException ex) {
+                Utils.msgBoxError(rootPane, ex.getMessage());
                 if (ex.getErrorCode() == 1) {
-                    svTfDir.setText(Utils.selecionarDir(this));
+                    srvTxtDir.setText(Utils.selectDir(this));
                 }
             }
         } else {
-            Utils.msgBoxErro(rootPane, "Defina o número da porta.");
+            Utils.msgBoxError(rootPane, "Defina o número da porta.");
         }
     }
 
-    public void svLigando() {
-        svBtLigar.setText("LIGANDO");
-        svTfPorta.setEditable(false);
+    public void srvStarting() {
+        srvBtnStart.setText("LIGANDO");
+        srvTxtPort.setEditable(false);
     }
 
-    public void svLigado(String IP) {
-        svTfIP.setText(IP);
-        svBtLigar.setText("DESLIGAR");
+    public void srvStarted(String ip) {
+        srvTxtIP.setText(ip);
+        srvBtnStart.setText("DESLIGAR");
     }
 
-    private void svDesligar() {
-        servidor.desligar();
+    private void srvShutdown() {
+        server.shutdown();
     }
 
-    public void svDesligado() {
-        svTfIP.setText("");
-        svTfPorta.setEditable(true);
-        svTfCliente.setText("");
-        svTfStatus.setText("");
-        svPb.setValue(0);
-        svBtLigar.setText("LIGAR");
+    public void srvShutdowned() {
+        srvTxtIP.setText("");
+        srvTxtPort.setEditable(true);
+        srvTxtClient.setText("");
+        srvTxtStatus.setText("");
+        srvPrg.setValue(0);
+        srvBtnStart.setText("LIGAR");
     }
     // </editor-fold>
 
     // <editor-fold defaultstate="collapsed" desc="Métodos para o cliente">
-    public void clAddArquivos(List<File> arquivos, long tamanhoTotal) {
-        if (arquivos != null && !arquivos.isEmpty()) {
-            this.clArquivos = arquivos;
-            clTfArquivo.setText("Vários");
-            clTamanhoTotal = tamanhoTotal;
-            clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+    public void cltAddFiles(List<File> files, long totalSize) {
+        if (files != null && !files.isEmpty()) {
+            this.cltFiles = files;
+            cltTxtFile.setText("Vários");
+            cltTotalSize = totalSize;
+            cltTxtSize.setText(Utils.bytesTo(cltTotalSize, cltCmbBytes.getSelectedItem().toString()));
         }
     }
 
-    public void clSetUltDir(String ultDir) {
-        this.clUltDir = ultDir;
+    public void cltSetLastDir(String lastDir) {
+        this.cltLastDir = lastDir;
     }
 
-    public void clAddAreaTextLog(String mensagem) {
-        if (!clTALog.getText().isEmpty()) {
-            clTALog.append("\n");
+    public void cltAddTextAreaLog(String message) {
+        if (!cltTxaLog.getText().isEmpty()) {
+            cltTxaLog.append("\n");
         }
-        clTALog.append(String.format("[%s] %s", new SimpleDateFormat("HH:mm:ss").format(new Date()), mensagem));
+        cltTxaLog.append(String.format("[%s] %s", new SimpleDateFormat("HH:mm:ss").format(new Date()), message));
     }
 
-    public void clSetStatus(String status) {
-        clTfStatus.setText(status);
+    public void cltSetStatus(String status) {
+        cltTxtStatus.setText(status);
     }
 
-    public void clSetProgressPainted(boolean painted) {
-        clPb.setStringPainted(painted);
+    public void cltSetProgressPainted(boolean painted) {
+        cltPrg.setStringPainted(painted);
     }
 
-    public void clSetProgress(int valor) {
-        clPb.setValue(valor);
+    public void cltSetProgress(int value) {
+        cltPrg.setValue(value);
     }
 
-    private void clConectar() {
-        if (!clTfPorta.getText().isEmpty()) {
-            int porta;
+    private void cltConnect() {
+        if (!cltTxtPort.getText().isEmpty()) {
+            int port;
             try {
-                porta = Integer.parseInt(clTfPorta.getText());
-                cliente.conectar(clTfIP.getText(), porta, clTfDir.getText());
+                port = Integer.parseInt(cltTxtPort.getText());
+                client.connect(cltTxtIP.getText(), port, cltTxtDir.getText());
             } catch (NumberFormatException ex) {
-                Utils.msgBoxErro(rootPane, "A porta deve ser definida com número inteiro.");
-            } catch (ClienteConectarException ex) {
-                Utils.msgBoxErro(rootPane, ex.getMessage());
+                Utils.msgBoxError(rootPane, "A porta deve ser definida com número inteiro.");
+            } catch (ClientConnectException ex) {
+                Utils.msgBoxError(rootPane, ex.getMessage());
                 if (ex.getErrorCode() == 1) {
-                    clTfDir.setText(Utils.selecionarDir(this));
+                    cltTxtDir.setText(Utils.selectDir(this));
                 }
             }
         } else {
-            Utils.msgBoxErro(rootPane, "Defina o número da porta.");
+            Utils.msgBoxError(rootPane, "Defina o número da porta.");
         }
     }
 
-    public void clConectando() {
-        clTfIP.setEditable(false);
-        clTfPorta.setEditable(false);
-        clBtConectar.setText("CONECTANDO");
+    public void cltConnecting() {
+        cltTxtIP.setEditable(false);
+        cltTxtPort.setEditable(false);
+        cltBtnConnect.setText("CONECTANDO");
     }
 
-    public void clConectado() {
-        clBtConectar.setText("DESCONECTAR");
+    public void cltConnected() {
+        cltBtnConnect.setText("DESCONECTAR");
     }
 
-    private void clDesconectar() {
-        cliente.desconectar();
+    private void cltDisconnect() {
+        client.disconnect();
     }
 
-    public void clDesconectado() {
-        clTfIP.setEditable(true);
-        clTfPorta.setEditable(true);
-        clBtConectar.setText("CONECTAR");
+    public void cltDisconnected() {
+        cltTxtIP.setEditable(true);
+        cltTxtPort.setEditable(true);
+        cltBtnConnect.setText("CONECTAR");
     }
     // </editor-fold>
 
@@ -276,39 +276,39 @@ public class MainGUI extends javax.swing.JFrame {
      */
     public MainGUI() {
         initComponents();
-        servidor = new Servidor(this);
-        svArquivos = new ArrayList<>();
-        cliente = new Cliente(this);
-        clArquivos = new ArrayList<>();
-        DefaultCaret svCaret = (DefaultCaret) svTALog.getCaret();
-        svCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        DefaultCaret clCaret = (DefaultCaret) clTALog.getCaret();
-        clCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
-        carregarPropriedades();
-        svTfArquivo.setDropTarget(new DropTarget() {
+        server = new Server(this);
+        srvFiles = new ArrayList<>();
+        client = new Client(this);
+        cltFiles = new ArrayList<>();
+        DefaultCaret srvCaret = (DefaultCaret) srvTxaLog.getCaret();
+        srvCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        DefaultCaret cltCaret = (DefaultCaret) cltTxaLog.getCaret();
+        cltCaret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        loadProperties();
+        srvTxtFile.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent dtde) {
                 try {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
                     List droppedFiles = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    svArquivos.clear();
+                    srvFiles.clear();
                     if (droppedFiles.size() == 1) {
                         Object object = droppedFiles.get(0);
                         if (object instanceof File) {
-                            File arquivo = (File) object;
-                            svArquivos.add(arquivo);
-                            svUltDir = arquivo.getParent();
-                            svTfArquivo.setText(svArquivos.get(0).getName());
-                            svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+                            File file = (File) object;
+                            srvFiles.add(file);
+                            srvLastDir = file.getParent();
+                            srvTxtFile.setText(srvFiles.get(0).getName());
+                            srvTxtSize.setText(Utils.bytesTo(srvFiles.get(0).length(), srvCmbBytes.getSelectedItem().toString()));
                         }
                     } else if (droppedFiles.size() > 1) {
                         for (Object object : droppedFiles) {
                             if (object instanceof File) {
-                                File arquivo = (File) object;
-                                svArquivos.add(arquivo);
-                                svTamanhoTotal += arquivo.length();
-                                svTfArquivo.setText("Vários");
-                                svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+                                File file = (File) object;
+                                srvFiles.add(file);
+                                srvTotalSize += file.length();
+                                srvTxtFile.setText("Vários");
+                                srvTxtSize.setText(Utils.bytesTo(srvTotalSize, srvCmbBytes.getSelectedItem().toString()));
                             }
                         }
                     }
@@ -317,30 +317,30 @@ public class MainGUI extends javax.swing.JFrame {
                 }
             }
         });
-        clTfArquivo.setDropTarget(new DropTarget() {
+        cltTxtFile.setDropTarget(new DropTarget() {
             @Override
             public synchronized void drop(DropTargetDropEvent dtde) {
                 try {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY);
                     List droppedFiles = (List) dtde.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                    clArquivos.clear();
+                    cltFiles.clear();
                     if (droppedFiles.size() == 1) {
                         Object object = droppedFiles.get(0);
                         if (object instanceof File) {
-                            File arquivo = (File) object;
-                            clArquivos.add(arquivo);
-                            clUltDir = arquivo.getParent();
-                            clTfArquivo.setText(clArquivos.get(0).getName());
-                            clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+                            File file = (File) object;
+                            cltFiles.add(file);
+                            cltLastDir = file.getParent();
+                            cltTxtFile.setText(cltFiles.get(0).getName());
+                            cltTxtSize.setText(Utils.bytesTo(cltFiles.get(0).length(), cltCmbBytes.getSelectedItem().toString()));
                         }
                     } else if (droppedFiles.size() > 1) {
                         for (Object object : droppedFiles) {
                             if (object instanceof File) {
-                                File arquivo = (File) object;
-                                clArquivos.add(arquivo);
-                                clTamanhoTotal += arquivo.length();
-                                clTfArquivo.setText("Vários");
-                                clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+                                File file = (File) object;
+                                cltFiles.add(file);
+                                cltTotalSize += file.length();
+                                cltTxtFile.setText("Vários");
+                                cltTxtSize.setText(Utils.bytesTo(cltTotalSize, cltCmbBytes.getSelectedItem().toString()));
                             }
                         }
                     }
@@ -361,54 +361,54 @@ public class MainGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        svLbIP = new javax.swing.JLabel();
-        svLbPorta = new javax.swing.JLabel();
-        svTfIP = new javax.swing.JTextField();
-        svTfPorta = new javax.swing.JTextField();
-        svTfDir = new javax.swing.JTextField();
-        svLbDir = new javax.swing.JLabel();
-        svBtLigar = new javax.swing.JButton();
-        svLbArquivo = new javax.swing.JLabel();
-        svTfArquivo = new javax.swing.JTextField();
-        svLbTamanho = new javax.swing.JLabel();
-        svTfTamanho = new javax.swing.JTextField();
-        svCbTipo = new javax.swing.JComboBox<>();
-        svBtSelecionar = new javax.swing.JButton();
-        svBtEnviar = new javax.swing.JButton();
-        svLbCliente = new javax.swing.JLabel();
-        svTfCliente = new javax.swing.JTextField();
-        svLbStatus = new javax.swing.JLabel();
-        svTfStatus = new javax.swing.JTextField();
-        svPb = new javax.swing.JProgressBar();
+        srvPnl = new javax.swing.JPanel();
+        srvLblIP = new javax.swing.JLabel();
+        srvLblPort = new javax.swing.JLabel();
+        srvTxtIP = new javax.swing.JTextField();
+        srvTxtPort = new javax.swing.JTextField();
+        srvTxtDir = new javax.swing.JTextField();
+        srvLblDir = new javax.swing.JLabel();
+        srvBtnStart = new javax.swing.JButton();
+        srvLblFile = new javax.swing.JLabel();
+        srvTxtFile = new javax.swing.JTextField();
+        srvLblSize = new javax.swing.JLabel();
+        srvTxtSize = new javax.swing.JTextField();
+        srvCmbBytes = new javax.swing.JComboBox<>();
+        srvBtnSelect = new javax.swing.JButton();
+        srvBtnSend = new javax.swing.JButton();
+        srvLblClient = new javax.swing.JLabel();
+        srvTxtClient = new javax.swing.JTextField();
+        srvLblStatus = new javax.swing.JLabel();
+        srvTxtStatus = new javax.swing.JTextField();
+        srvPrg = new javax.swing.JProgressBar();
         jScrollPane1 = new javax.swing.JScrollPane();
-        svTALog = new javax.swing.JTextArea();
-        svCbLote = new javax.swing.JCheckBox();
-        jPanel2 = new javax.swing.JPanel();
-        clLbIP = new javax.swing.JLabel();
-        clTfIP = new javax.swing.JTextField();
-        clLbPorta = new javax.swing.JLabel();
-        clTfPorta = new javax.swing.JTextField();
-        clTfDir = new javax.swing.JTextField();
-        clLbDir = new javax.swing.JLabel();
-        clBtConectar = new javax.swing.JButton();
-        clLbArquivo = new javax.swing.JLabel();
-        clTfArquivo = new javax.swing.JTextField();
-        clLbTamanho = new javax.swing.JLabel();
-        clTfTamanho = new javax.swing.JTextField();
-        clCbTipo = new javax.swing.JComboBox<>();
-        clBtSelecionar = new javax.swing.JButton();
-        clBtEnviar = new javax.swing.JButton();
-        clTfStatus = new javax.swing.JTextField();
-        clLbStatus = new javax.swing.JLabel();
-        clPb = new javax.swing.JProgressBar();
+        srvTxaLog = new javax.swing.JTextArea();
+        srvChkBatch = new javax.swing.JCheckBox();
+        cltPnl = new javax.swing.JPanel();
+        cltLblIP = new javax.swing.JLabel();
+        cltTxtIP = new javax.swing.JTextField();
+        cltLblPort = new javax.swing.JLabel();
+        cltTxtPort = new javax.swing.JTextField();
+        cltTxtDir = new javax.swing.JTextField();
+        cltLblDir = new javax.swing.JLabel();
+        cltBtnConnect = new javax.swing.JButton();
+        cltLblFile = new javax.swing.JLabel();
+        cltTxtFile = new javax.swing.JTextField();
+        cltLblSize = new javax.swing.JLabel();
+        cltTxtSize = new javax.swing.JTextField();
+        cltCmbBytes = new javax.swing.JComboBox<>();
+        cltBtnSelect = new javax.swing.JButton();
+        cltBtnSend = new javax.swing.JButton();
+        cltTxtStatus = new javax.swing.JTextField();
+        cltLblStatus = new javax.swing.JLabel();
+        cltPrg = new javax.swing.JProgressBar();
         jScrollPane2 = new javax.swing.JScrollPane();
-        clTALog = new javax.swing.JTextArea();
-        clCbLote = new javax.swing.JCheckBox();
+        cltTxaLog = new javax.swing.JTextArea();
+        cltChkBatch = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("TransferirArquivo");
-        setIconImage(new ImageIcon(getClass().getResource("/br/com/iagocolodetti/transferirarquivo/resource/icone.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/br/com/iagocolodetti/transferirarquivo/resource/icon.png")).getImage());
         setMaximumSize(new java.awt.Dimension(600, 767));
         setMinimumSize(new java.awt.Dimension(600, 767));
         setName("FramePrincipal"); // NOI18N
@@ -425,415 +425,415 @@ public class MainGUI extends javax.swing.JFrame {
         jTabbedPane1.setMinimumSize(new java.awt.Dimension(1, 1));
         jTabbedPane1.setPreferredSize(new java.awt.Dimension(470, 800));
 
-        jPanel1.setBackground(new java.awt.Color(235, 235, 235));
+        srvPnl.setBackground(new java.awt.Color(235, 235, 235));
 
-        svLbIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbIP.setText("IP:");
+        srvLblIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblIP.setText("IP:");
 
-        svLbPorta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbPorta.setText("Porta:");
+        srvLblPort.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblPort.setText("Porta:");
 
-        svTfIP.setEditable(false);
-        svTfIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfIP.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        svTfIP.setFocusable(false);
+        srvTxtIP.setEditable(false);
+        srvTxtIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtIP.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtIP.setFocusable(false);
 
-        svTfPorta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfPorta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtPort.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtPort.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
-        svTfDir.setEditable(false);
-        svTfDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfDir.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        svTfDir.addMouseListener(new java.awt.event.MouseAdapter() {
+        srvTxtDir.setEditable(false);
+        srvTxtDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtDir.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtDir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                svTfDirMouseClicked(evt);
+                srvTxtDirMouseClicked(evt);
             }
         });
-        svTfDir.addKeyListener(new java.awt.event.KeyAdapter() {
+        srvTxtDir.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                svTfDirKeyPressed(evt);
+                srvTxtDirKeyPressed(evt);
             }
         });
 
-        svLbDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbDir.setText("Diretório:");
+        srvLblDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblDir.setText("Diretório:");
 
-        svBtLigar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svBtLigar.setText("LIGAR");
-        svBtLigar.addActionListener(new java.awt.event.ActionListener() {
+        srvBtnStart.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvBtnStart.setText("LIGAR");
+        srvBtnStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                svBtLigarActionPerformed(evt);
+                srvBtnStartActionPerformed(evt);
             }
         });
 
-        svLbArquivo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbArquivo.setText("Arquivo:");
+        srvLblFile.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblFile.setText("Arquivo:");
 
-        svTfArquivo.setEditable(false);
-        svTfArquivo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfArquivo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        svTfArquivo.setFocusable(false);
+        srvTxtFile.setEditable(false);
+        srvTxtFile.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtFile.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtFile.setFocusable(false);
 
-        svLbTamanho.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbTamanho.setText("Tamanho:");
+        srvLblSize.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblSize.setText("Tamanho:");
 
-        svTfTamanho.setEditable(false);
-        svTfTamanho.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfTamanho.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        svTfTamanho.setFocusable(false);
+        srvTxtSize.setEditable(false);
+        srvTxtSize.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtSize.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtSize.setFocusable(false);
 
-        svCbTipo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svCbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "B", "KB", "MB", "GB", "TB" }));
-        svCbTipo.addActionListener(new java.awt.event.ActionListener() {
+        srvCmbBytes.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvCmbBytes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "B", "KB", "MB", "GB", "TB" }));
+        srvCmbBytes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                svCbTipoActionPerformed(evt);
+                srvCmbBytesActionPerformed(evt);
             }
         });
 
-        svBtSelecionar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svBtSelecionar.setText("Selecionar Arquivo");
-        svBtSelecionar.addActionListener(new java.awt.event.ActionListener() {
+        srvBtnSelect.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvBtnSelect.setText("Selecionar Arquivo");
+        srvBtnSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                svBtSelecionarActionPerformed(evt);
+                srvBtnSelectActionPerformed(evt);
             }
         });
 
-        svBtEnviar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svBtEnviar.setText("Enviar");
-        svBtEnviar.addActionListener(new java.awt.event.ActionListener() {
+        srvBtnSend.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvBtnSend.setText("Enviar");
+        srvBtnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                svBtEnviarActionPerformed(evt);
+                srvBtnSendActionPerformed(evt);
             }
         });
 
-        svLbCliente.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbCliente.setText("Cliente Conectado:");
+        srvLblClient.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblClient.setText("Cliente Conectado:");
 
-        svTfCliente.setEditable(false);
-        svTfCliente.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfCliente.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        svTfCliente.setFocusable(false);
+        srvTxtClient.setEditable(false);
+        srvTxtClient.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtClient.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtClient.setFocusable(false);
 
-        svLbStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svLbStatus.setText("Status:");
+        srvLblStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvLblStatus.setText("Status:");
 
-        svTfStatus.setEditable(false);
-        svTfStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svTfStatus.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        svTfStatus.setFocusable(false);
+        srvTxtStatus.setEditable(false);
+        srvTxtStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvTxtStatus.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        srvTxtStatus.setFocusable(false);
 
-        svPb.setForeground(new java.awt.Color(0, 204, 51));
-        svPb.setFocusable(false);
+        srvPrg.setForeground(new java.awt.Color(0, 204, 51));
+        srvPrg.setFocusable(false);
 
-        svTALog.setEditable(false);
-        svTALog.setBackground(new java.awt.Color(240, 240, 240));
-        svTALog.setColumns(20);
-        svTALog.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        svTALog.setLineWrap(true);
-        svTALog.setRows(5);
-        svTALog.setWrapStyleWord(true);
-        svTALog.setFocusable(false);
-        jScrollPane1.setViewportView(svTALog);
+        srvTxaLog.setEditable(false);
+        srvTxaLog.setBackground(new java.awt.Color(240, 240, 240));
+        srvTxaLog.setColumns(20);
+        srvTxaLog.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        srvTxaLog.setLineWrap(true);
+        srvTxaLog.setRows(5);
+        srvTxaLog.setWrapStyleWord(true);
+        srvTxaLog.setFocusable(false);
+        jScrollPane1.setViewportView(srvTxaLog);
 
-        svCbLote.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        svCbLote.setText("Lote");
+        srvChkBatch.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        srvChkBatch.setText("Lote");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout srvPnlLayout = new javax.swing.GroupLayout(srvPnl);
+        srvPnl.setLayout(srvPnlLayout);
+        srvPnlLayout.setHorizontalGroup(
+            srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(srvPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(svLbIP)
+                    .addGroup(srvPnlLayout.createSequentialGroup()
+                        .addComponent(srvLblIP)
                         .addGap(50, 50, 50)
-                        .addComponent(svTfIP)
+                        .addComponent(srvTxtIP)
                         .addGap(18, 18, 18)
-                        .addComponent(svLbPorta)
+                        .addComponent(srvLblPort)
                         .addGap(18, 18, 18)
-                        .addComponent(svTfPorta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(svPb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(svLbDir)
+                        .addComponent(srvTxtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(srvPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(srvPnlLayout.createSequentialGroup()
+                        .addComponent(srvLblDir)
                         .addGap(10, 10, 10)
-                        .addComponent(svTfDir))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(svLbTamanho)
+                        .addComponent(srvTxtDir))
+                    .addGroup(srvPnlLayout.createSequentialGroup()
+                        .addComponent(srvLblSize)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(svTfArquivo, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(svTfTamanho, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(srvTxtFile, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, srvPnlLayout.createSequentialGroup()
+                                .addComponent(srvTxtSize, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(svCbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(svBtSelecionar, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(srvCmbBytes, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(srvPnlLayout.createSequentialGroup()
+                        .addComponent(srvBtnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(svCbLote)
+                        .addComponent(srvChkBatch)
                         .addGap(50, 50, 50)
-                        .addComponent(svBtEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(srvBtnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, srvPnlLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(svBtLigar, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(srvBtnStart, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(166, 166, 166))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(svLbStatus)
+                    .addGroup(srvPnlLayout.createSequentialGroup()
+                        .addComponent(srvLblStatus)
                         .addGap(18, 18, 18)
-                        .addComponent(svTfStatus))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(svLbArquivo)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(svLbCliente)
+                        .addComponent(srvTxtStatus))
+                    .addGroup(srvPnlLayout.createSequentialGroup()
+                        .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(srvLblFile)
+                            .addGroup(srvPnlLayout.createSequentialGroup()
+                                .addComponent(srvLblClient)
                                 .addGap(18, 18, 18)
-                                .addComponent(svTfCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(srvTxtClient, javax.swing.GroupLayout.PREFERRED_SIZE, 441, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        srvPnlLayout.setVerticalGroup(
+            srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(srvPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svLbIP)
-                    .addComponent(svTfIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(svLbPorta)
-                    .addComponent(svTfPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvLblIP)
+                    .addComponent(srvTxtIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(srvLblPort)
+                    .addComponent(srvTxtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svLbDir)
-                    .addComponent(svTfDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvLblDir)
+                    .addComponent(srvTxtDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(svBtLigar)
+                .addComponent(srvBtnStart)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svLbCliente)
-                    .addComponent(svTfCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvLblClient)
+                    .addComponent(srvTxtClient, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svLbArquivo)
-                    .addComponent(svTfArquivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvLblFile)
+                    .addComponent(srvTxtFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svLbTamanho)
-                    .addComponent(svTfTamanho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(svCbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvLblSize)
+                    .addComponent(srvTxtSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(srvCmbBytes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svBtSelecionar)
-                    .addComponent(svBtEnviar)
-                    .addComponent(svCbLote))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvBtnSelect)
+                    .addComponent(srvBtnSend)
+                    .addComponent(srvChkBatch))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(svLbStatus)
-                    .addComponent(svTfStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(srvPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(srvLblStatus)
+                    .addComponent(srvTxtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13)
-                .addComponent(svPb, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(srvPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        svTfPorta.getAccessibleContext().setAccessibleName("");
+        srvTxtPort.getAccessibleContext().setAccessibleName("");
 
-        jTabbedPane1.addTab("      Servidor      ", jPanel1);
+        jTabbedPane1.addTab("      Servidor      ", srvPnl);
 
-        jPanel2.setBackground(new java.awt.Color(235, 235, 235));
+        cltPnl.setBackground(new java.awt.Color(235, 235, 235));
 
-        clLbIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clLbIP.setText("IP:");
+        cltLblIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltLblIP.setText("IP:");
 
-        clTfIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clTfIP.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cltTxtIP.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltTxtIP.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
-        clLbPorta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clLbPorta.setText("Porta:");
+        cltLblPort.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltLblPort.setText("Porta:");
 
-        clTfPorta.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clTfPorta.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cltTxtPort.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltTxtPort.setHorizontalAlignment(javax.swing.JTextField.CENTER);
 
-        clTfDir.setEditable(false);
-        clTfDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clTfDir.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        clTfDir.addMouseListener(new java.awt.event.MouseAdapter() {
+        cltTxtDir.setEditable(false);
+        cltTxtDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltTxtDir.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cltTxtDir.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                clTfDirMouseClicked(evt);
+                cltTxtDirMouseClicked(evt);
             }
         });
-        clTfDir.addKeyListener(new java.awt.event.KeyAdapter() {
+        cltTxtDir.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                clTfDirKeyPressed(evt);
+                cltTxtDirKeyPressed(evt);
             }
         });
 
-        clLbDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clLbDir.setText("Diretório:");
+        cltLblDir.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltLblDir.setText("Diretório:");
 
-        clBtConectar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clBtConectar.setText("CONECTAR");
-        clBtConectar.addActionListener(new java.awt.event.ActionListener() {
+        cltBtnConnect.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltBtnConnect.setText("CONECTAR");
+        cltBtnConnect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clBtConectarActionPerformed(evt);
+                cltBtnConnectActionPerformed(evt);
             }
         });
 
-        clLbArquivo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clLbArquivo.setText("Arquivo:");
+        cltLblFile.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltLblFile.setText("Arquivo:");
 
-        clTfArquivo.setEditable(false);
-        clTfArquivo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clTfArquivo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        clTfArquivo.setFocusable(false);
+        cltTxtFile.setEditable(false);
+        cltTxtFile.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltTxtFile.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cltTxtFile.setFocusable(false);
 
-        clLbTamanho.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clLbTamanho.setText("Tamanho:");
+        cltLblSize.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltLblSize.setText("Tamanho:");
 
-        clTfTamanho.setEditable(false);
-        clTfTamanho.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clTfTamanho.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        clTfTamanho.setFocusable(false);
+        cltTxtSize.setEditable(false);
+        cltTxtSize.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltTxtSize.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cltTxtSize.setFocusable(false);
 
-        clCbTipo.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clCbTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "B", "KB", "MB", "GB", "TB" }));
-        clCbTipo.addActionListener(new java.awt.event.ActionListener() {
+        cltCmbBytes.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltCmbBytes.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "B", "KB", "MB", "GB", "TB" }));
+        cltCmbBytes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clCbTipoActionPerformed(evt);
+                cltCmbBytesActionPerformed(evt);
             }
         });
 
-        clBtSelecionar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clBtSelecionar.setText("Selecionar Arquivo");
-        clBtSelecionar.addActionListener(new java.awt.event.ActionListener() {
+        cltBtnSelect.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltBtnSelect.setText("Selecionar Arquivo");
+        cltBtnSelect.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clBtSelecionarActionPerformed(evt);
+                cltBtnSelectActionPerformed(evt);
             }
         });
 
-        clBtEnviar.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clBtEnviar.setText("Enviar");
-        clBtEnviar.addActionListener(new java.awt.event.ActionListener() {
+        cltBtnSend.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltBtnSend.setText("Enviar");
+        cltBtnSend.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clBtEnviarActionPerformed(evt);
+                cltBtnSendActionPerformed(evt);
             }
         });
 
-        clTfStatus.setEditable(false);
-        clTfStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clTfStatus.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        clTfStatus.setFocusable(false);
+        cltTxtStatus.setEditable(false);
+        cltTxtStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltTxtStatus.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        cltTxtStatus.setFocusable(false);
 
-        clLbStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clLbStatus.setText("Status:");
+        cltLblStatus.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltLblStatus.setText("Status:");
 
-        clPb.setForeground(new java.awt.Color(0, 204, 51));
-        clPb.setFocusable(false);
+        cltPrg.setForeground(new java.awt.Color(0, 204, 51));
+        cltPrg.setFocusable(false);
 
-        clTALog.setEditable(false);
-        clTALog.setBackground(new java.awt.Color(240, 240, 240));
-        clTALog.setColumns(20);
-        clTALog.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-        clTALog.setLineWrap(true);
-        clTALog.setRows(5);
-        clTALog.setWrapStyleWord(true);
-        clTALog.setFocusable(false);
-        jScrollPane2.setViewportView(clTALog);
+        cltTxaLog.setEditable(false);
+        cltTxaLog.setBackground(new java.awt.Color(240, 240, 240));
+        cltTxaLog.setColumns(20);
+        cltTxaLog.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        cltTxaLog.setLineWrap(true);
+        cltTxaLog.setRows(5);
+        cltTxaLog.setWrapStyleWord(true);
+        cltTxaLog.setFocusable(false);
+        jScrollPane2.setViewportView(cltTxaLog);
 
-        clCbLote.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        clCbLote.setText("Lote");
+        cltChkBatch.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        cltChkBatch.setText("Lote");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout cltPnlLayout = new javax.swing.GroupLayout(cltPnl);
+        cltPnl.setLayout(cltPnlLayout);
+        cltPnlLayout.setHorizontalGroup(
+            cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cltPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane2)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(clLbIP)
+                    .addGroup(cltPnlLayout.createSequentialGroup()
+                        .addComponent(cltLblIP)
                         .addGap(50, 50, 50)
-                        .addComponent(clTfIP)
+                        .addComponent(cltTxtIP)
                         .addGap(18, 18, 18)
-                        .addComponent(clLbPorta)
+                        .addComponent(cltLblPort)
                         .addGap(18, 18, 18)
-                        .addComponent(clTfPorta, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(cltTxtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cltPnlLayout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(clBtConectar, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(cltBtnConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(166, 166, 166))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(clLbDir)
+                    .addGroup(cltPnlLayout.createSequentialGroup()
+                        .addComponent(cltLblDir)
                         .addGap(10, 10, 10)
-                        .addComponent(clTfDir))
-                    .addComponent(clPb, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(clLbTamanho)
+                        .addComponent(cltTxtDir))
+                    .addComponent(cltPrg, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(cltPnlLayout.createSequentialGroup()
+                        .addComponent(cltLblSize)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(clTfArquivo, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                                .addComponent(clTfTamanho, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cltTxtFile, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, cltPnlLayout.createSequentialGroup()
+                                .addComponent(cltTxtSize, javax.swing.GroupLayout.PREFERRED_SIZE, 414, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(clCbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(clBtSelecionar, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(cltCmbBytes, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(cltPnlLayout.createSequentialGroup()
+                        .addComponent(cltBtnSelect, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(51, 51, 51)
-                        .addComponent(clCbLote)
+                        .addComponent(cltChkBatch)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(clBtEnviar, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(clLbArquivo)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(clLbStatus)
+                        .addComponent(cltBtnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(cltPnlLayout.createSequentialGroup()
+                        .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cltLblFile)
+                            .addGroup(cltPnlLayout.createSequentialGroup()
+                                .addComponent(cltLblStatus)
                                 .addGap(18, 18, 18)
-                                .addComponent(clTfStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(cltTxtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 513, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        cltPnlLayout.setVerticalGroup(
+            cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(cltPnlLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clLbIP)
-                    .addComponent(clTfIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(clLbPorta)
-                    .addComponent(clTfPorta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cltLblIP)
+                    .addComponent(cltTxtIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cltLblPort)
+                    .addComponent(cltTxtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clLbDir)
-                    .addComponent(clTfDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cltLblDir)
+                    .addComponent(cltTxtDir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(clBtConectar)
+                .addComponent(cltBtnConnect)
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clLbArquivo)
-                    .addComponent(clTfArquivo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cltLblFile)
+                    .addComponent(cltTxtFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clLbTamanho)
-                    .addComponent(clTfTamanho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(clCbTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cltLblSize)
+                    .addComponent(cltTxtSize, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cltCmbBytes, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clBtSelecionar)
-                    .addComponent(clBtEnviar)
-                    .addComponent(clCbLote))
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cltBtnSelect)
+                    .addComponent(cltBtnSend)
+                    .addComponent(cltChkBatch))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(clLbStatus)
-                    .addComponent(clTfStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(cltPnlLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(cltLblStatus)
+                    .addComponent(cltTxtStatus, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(13, 13, 13)
-                .addComponent(clPb, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(cltPrg, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 390, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        jTabbedPane1.addTab("      Cliente      ", jPanel2);
+        jTabbedPane1.addTab("      Cliente      ", cltPnl);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -853,155 +853,155 @@ public class MainGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // <editor-fold defaultstate="collapsed" desc="Ações para o servidor">
-    private void svBtLigarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_svBtLigarActionPerformed
-        if (svBtLigar.getText().equals("LIGAR")) {
-            svLigar();
-        } else if (svBtLigar.getText().equals("DESLIGAR")) {
-            svDesligar();
+    private void srvBtnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srvBtnStartActionPerformed
+        if (srvBtnStart.getText().equals("LIGAR")) {
+            srvStart();
+        } else if (srvBtnStart.getText().equals("DESLIGAR")) {
+            srvShutdown();
         }
-    }//GEN-LAST:event_svBtLigarActionPerformed
+    }//GEN-LAST:event_srvBtnStartActionPerformed
 
-    private void svCbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_svCbTipoActionPerformed
-        if (!svArquivos.isEmpty()) {
-            if (svArquivos.size() == 1) {
-                svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+    private void srvCmbBytesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srvCmbBytesActionPerformed
+        if (!srvFiles.isEmpty()) {
+            if (srvFiles.size() == 1) {
+                srvTxtSize.setText(Utils.bytesTo(srvFiles.get(0).length(), srvCmbBytes.getSelectedItem().toString()));
             } else {
-                svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svTamanhoTotal));
+                srvTxtSize.setText(Utils.bytesTo(srvTotalSize, srvCmbBytes.getSelectedItem().toString()));
             }
         }
-    }//GEN-LAST:event_svCbTipoActionPerformed
+    }//GEN-LAST:event_srvCmbBytesActionPerformed
 
-    private void svBtSelecionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_svBtSelecionarActionPerformed
-        if (!servidor.enviandoArquivos()) {
-            if (!svCbLote.isSelected()) {
+    private void srvBtnSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srvBtnSelectActionPerformed
+        if (!server.sendingFiles()) {
+            if (!srvChkBatch.isSelected()) {
                 try {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                    if (!svUltDir.isEmpty()) {
-                        chooser.setCurrentDirectory(new File(svUltDir));
+                    if (!srvLastDir.isEmpty()) {
+                        chooser.setCurrentDirectory(new File(srvLastDir));
                     }
                     chooser.setDialogTitle("Selecione o arquivo");
 
                     if (chooser.showOpenDialog(this) == JFileChooser.OPEN_DIALOG) {
-                        svArquivos.clear();
-                        svArquivos.add(chooser.getSelectedFile());
-                        svUltDir = chooser.getSelectedFile().getParent();
-                        svTfArquivo.setText(svArquivos.get(0).getName());
-                        svTfTamanho.setText(Utils.calcularTamanho(svCbTipo.getSelectedItem().toString(), svArquivos.get(0).length()));
+                        srvFiles.clear();
+                        srvFiles.add(chooser.getSelectedFile());
+                        srvLastDir = chooser.getSelectedFile().getParent();
+                        srvTxtFile.setText(srvFiles.get(0).getName());
+                        srvTxtSize.setText(Utils.bytesTo(srvFiles.get(0).length(), srvCmbBytes.getSelectedItem().toString()));
                     }
                 } catch (IndexOutOfBoundsException ex) {
                     ex.printStackTrace();
                 }
             } else {
                 this.setVisible(false);
-                new AddArquivos(this, "sv", svArquivos, svUltDir).setVisible(true);
+                new AddFiles(this, "srv", srvFiles, srvLastDir).setVisible(true);
             }
         } else {
-            Utils.msgBoxErro(rootPane, "O servidor ainda está enviando arquivos, aguarde o termino da operação atual.");
+            Utils.msgBoxError(rootPane, "O servidor ainda está enviando arquivos, aguarde o termino da operação atual.");
         }
-    }//GEN-LAST:event_svBtSelecionarActionPerformed
+    }//GEN-LAST:event_srvBtnSelectActionPerformed
 
-    private void svBtEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_svBtEnviarActionPerformed
-        if (svBtLigar.getText().equals("DESLIGAR") && !svTfCliente.getText().isEmpty()) {
+    private void srvBtnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srvBtnSendActionPerformed
+        if (srvBtnStart.getText().equals("DESLIGAR") && !srvTxtClient.getText().isEmpty()) {
             try {
-                servidor.enviarArquivos(svArquivos);
-            } catch (EnviarArquivoException ex) {
-                Utils.msgBoxErro(rootPane, ex.getMessage());
+                server.sendFiles(srvFiles);
+            } catch (SendFileException ex) {
+                Utils.msgBoxError(rootPane, ex.getMessage());
             }
         } else {
-            Utils.msgBoxErro(rootPane, "O servidor deve estar ligado e um cliente conectado.");
+            Utils.msgBoxError(rootPane, "O servidor deve estar ligado e um cliente conectado.");
         }
-    }//GEN-LAST:event_svBtEnviarActionPerformed
+    }//GEN-LAST:event_srvBtnSendActionPerformed
 
-    private void svTfDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_svTfDirMouseClicked
-        if (svBtLigar.getText().equals("LIGAR")) {
-            svTfDir.setText(Utils.selecionarDir(this));
+    private void srvTxtDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_srvTxtDirMouseClicked
+        if (srvBtnStart.getText().equals("LIGAR")) {
+            srvTxtDir.setText(Utils.selectDir(this));
         }
-    }//GEN-LAST:event_svTfDirMouseClicked
+    }//GEN-LAST:event_srvTxtDirMouseClicked
 
-    private void svTfDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_svTfDirKeyPressed
-        if (svBtLigar.getText().equals("LIGAR") && evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            svTfDir.setText(Utils.selecionarDir(this));
+    private void srvTxtDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_srvTxtDirKeyPressed
+        if (srvBtnStart.getText().equals("LIGAR") && evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            srvTxtDir.setText(Utils.selectDir(this));
         }
-    }//GEN-LAST:event_svTfDirKeyPressed
+    }//GEN-LAST:event_srvTxtDirKeyPressed
     // </editor-fold>
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        salvarPropriedades();
+        saveProperties();
     }//GEN-LAST:event_formWindowClosing
 
     // <editor-fold defaultstate="collapsed" desc="Ações para o cliente">
-    private void clTfDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clTfDirMouseClicked
-        if (clBtConectar.getText().equals("CONECTAR")) {
-            clTfDir.setText(Utils.selecionarDir(this));
+    private void cltTxtDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cltTxtDirMouseClicked
+        if (cltBtnConnect.getText().equals("CONECTAR")) {
+            cltTxtDir.setText(Utils.selectDir(this));
         }
-    }//GEN-LAST:event_clTfDirMouseClicked
+    }//GEN-LAST:event_cltTxtDirMouseClicked
 
-    private void clTfDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_clTfDirKeyPressed
-        if (clBtConectar.getText().equals("CONECTAR") && evt.getKeyCode() == KeyEvent.VK_ENTER) {
-            clTfDir.setText(Utils.selecionarDir(this));
+    private void cltTxtDirKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cltTxtDirKeyPressed
+        if (cltBtnConnect.getText().equals("CONECTAR") && evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            cltTxtDir.setText(Utils.selectDir(this));
         }
-    }//GEN-LAST:event_clTfDirKeyPressed
+    }//GEN-LAST:event_cltTxtDirKeyPressed
 
-    private void clBtConectarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clBtConectarActionPerformed
-        if (clBtConectar.getText().equals("CONECTAR")) {
-            clConectar();
-        } else if (clBtConectar.getText().equals("DESCONECTAR") || clBtConectar.getText().equals("CONECTANDO")) {
-            clDesconectar();
+    private void cltBtnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cltBtnConnectActionPerformed
+        if (cltBtnConnect.getText().equals("CONECTAR")) {
+            cltConnect();
+        } else if (cltBtnConnect.getText().equals("DESCONECTAR") || cltBtnConnect.getText().equals("CONECTANDO")) {
+            cltDisconnect();
         }
-    }//GEN-LAST:event_clBtConectarActionPerformed
+    }//GEN-LAST:event_cltBtnConnectActionPerformed
 
-    private void clCbTipoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clCbTipoActionPerformed
-        if (!clArquivos.isEmpty()) {
-            if (clArquivos.size() == 1) {
-                clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+    private void cltCmbBytesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cltCmbBytesActionPerformed
+        if (!cltFiles.isEmpty()) {
+            if (cltFiles.size() == 1) {
+                cltTxtSize.setText(Utils.bytesTo(cltFiles.get(0).length(), cltCmbBytes.getSelectedItem().toString()));
             } else {
-                clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clTamanhoTotal));
+                cltTxtSize.setText(Utils.bytesTo(cltTotalSize, cltCmbBytes.getSelectedItem().toString()));
             }
         }
-    }//GEN-LAST:event_clCbTipoActionPerformed
+    }//GEN-LAST:event_cltCmbBytesActionPerformed
 
-    private void clBtSelecionarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clBtSelecionarActionPerformed
-        if (!cliente.enviandoArquivos()) {
-            if (!clCbLote.isSelected()) {
+    private void cltBtnSelectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cltBtnSelectActionPerformed
+        if (!client.sendingFiles()) {
+            if (!cltChkBatch.isSelected()) {
                 try {
                     JFileChooser chooser = new JFileChooser();
                     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                    if (!clUltDir.isEmpty()) {
-                        chooser.setCurrentDirectory(new File(clUltDir));
+                    if (!cltLastDir.isEmpty()) {
+                        chooser.setCurrentDirectory(new File(cltLastDir));
                     }
                     chooser.setDialogTitle("Selecione o arquivo");
 
                     if (chooser.showOpenDialog(this) == JFileChooser.OPEN_DIALOG) {
-                        clArquivos.clear();
-                        clArquivos.add(chooser.getSelectedFile());
-                        clUltDir = chooser.getSelectedFile().getParent();
-                        clTfArquivo.setText(clArquivos.get(0).getName());
-                        clTfTamanho.setText(Utils.calcularTamanho(clCbTipo.getSelectedItem().toString(), clArquivos.get(0).length()));
+                        cltFiles.clear();
+                        cltFiles.add(chooser.getSelectedFile());
+                        cltLastDir = chooser.getSelectedFile().getParent();
+                        cltTxtFile.setText(cltFiles.get(0).getName());
+                        cltTxtSize.setText(Utils.bytesTo(cltFiles.get(0).length(), cltCmbBytes.getSelectedItem().toString()));
                     }
                 } catch (IndexOutOfBoundsException ex) {
                     ex.printStackTrace();
                 }
             } else {
                 this.setVisible(false);
-                new AddArquivos(this, "cl", clArquivos, clUltDir).setVisible(true);
+                new AddFiles(this, "clt", cltFiles, cltLastDir).setVisible(true);
             }
         } else {
-            Utils.msgBoxErro(rootPane, "O cliente ainda está enviando arquivos, aguarde o termino da operação atual.");
+            Utils.msgBoxError(rootPane, "O cliente ainda está enviando arquivos, aguarde o termino da operação atual.");
         }
-    }//GEN-LAST:event_clBtSelecionarActionPerformed
+    }//GEN-LAST:event_cltBtnSelectActionPerformed
 
-    private void clBtEnviarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clBtEnviarActionPerformed
-        if (clBtConectar.getText().equals("DESCONECTAR")) {
+    private void cltBtnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cltBtnSendActionPerformed
+        if (cltBtnConnect.getText().equals("DESCONECTAR")) {
             try {
-                cliente.enviarArquivos(clArquivos);
-            } catch (EnviarArquivoException e) {
-                Utils.msgBoxErro(rootPane, e.getMessage());
+                client.sendFiles(cltFiles);
+            } catch (SendFileException e) {
+                Utils.msgBoxError(rootPane, e.getMessage());
             }
         } else {
-            Utils.msgBoxErro(rootPane, "Conecte-se a um servidor.");
+            Utils.msgBoxError(rootPane, "Conecte-se a um servidor.");
         }
-    }//GEN-LAST:event_clBtEnviarActionPerformed
+    }//GEN-LAST:event_cltBtnSendActionPerformed
     // </editor-fold>
 
     /**
@@ -1046,50 +1046,50 @@ public class MainGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton clBtConectar;
-    private javax.swing.JButton clBtEnviar;
-    private javax.swing.JButton clBtSelecionar;
-    private javax.swing.JCheckBox clCbLote;
-    private javax.swing.JComboBox<String> clCbTipo;
-    private javax.swing.JLabel clLbArquivo;
-    private javax.swing.JLabel clLbDir;
-    private javax.swing.JLabel clLbIP;
-    private javax.swing.JLabel clLbPorta;
-    private javax.swing.JLabel clLbStatus;
-    private javax.swing.JLabel clLbTamanho;
-    private javax.swing.JProgressBar clPb;
-    private javax.swing.JTextArea clTALog;
-    private javax.swing.JTextField clTfArquivo;
-    private javax.swing.JTextField clTfDir;
-    private javax.swing.JTextField clTfIP;
-    private javax.swing.JTextField clTfPorta;
-    private javax.swing.JTextField clTfStatus;
-    private javax.swing.JTextField clTfTamanho;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JButton cltBtnConnect;
+    private javax.swing.JButton cltBtnSelect;
+    private javax.swing.JButton cltBtnSend;
+    private javax.swing.JCheckBox cltChkBatch;
+    private javax.swing.JComboBox<String> cltCmbBytes;
+    private javax.swing.JLabel cltLblDir;
+    private javax.swing.JLabel cltLblFile;
+    private javax.swing.JLabel cltLblIP;
+    private javax.swing.JLabel cltLblPort;
+    private javax.swing.JLabel cltLblSize;
+    private javax.swing.JLabel cltLblStatus;
+    private javax.swing.JPanel cltPnl;
+    private javax.swing.JProgressBar cltPrg;
+    private javax.swing.JTextArea cltTxaLog;
+    private javax.swing.JTextField cltTxtDir;
+    private javax.swing.JTextField cltTxtFile;
+    private javax.swing.JTextField cltTxtIP;
+    private javax.swing.JTextField cltTxtPort;
+    private javax.swing.JTextField cltTxtSize;
+    private javax.swing.JTextField cltTxtStatus;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JButton svBtEnviar;
-    private javax.swing.JButton svBtLigar;
-    private javax.swing.JButton svBtSelecionar;
-    private javax.swing.JCheckBox svCbLote;
-    private javax.swing.JComboBox<String> svCbTipo;
-    private javax.swing.JLabel svLbArquivo;
-    private javax.swing.JLabel svLbCliente;
-    private javax.swing.JLabel svLbDir;
-    private javax.swing.JLabel svLbIP;
-    private javax.swing.JLabel svLbPorta;
-    private javax.swing.JLabel svLbStatus;
-    private javax.swing.JLabel svLbTamanho;
-    private javax.swing.JProgressBar svPb;
-    private javax.swing.JTextArea svTALog;
-    private javax.swing.JTextField svTfArquivo;
-    private javax.swing.JTextField svTfCliente;
-    private javax.swing.JTextField svTfDir;
-    private javax.swing.JTextField svTfIP;
-    private javax.swing.JTextField svTfPorta;
-    private javax.swing.JTextField svTfStatus;
-    private javax.swing.JTextField svTfTamanho;
+    private javax.swing.JButton srvBtnSelect;
+    private javax.swing.JButton srvBtnSend;
+    private javax.swing.JButton srvBtnStart;
+    private javax.swing.JCheckBox srvChkBatch;
+    private javax.swing.JComboBox<String> srvCmbBytes;
+    private javax.swing.JLabel srvLblClient;
+    private javax.swing.JLabel srvLblDir;
+    private javax.swing.JLabel srvLblFile;
+    private javax.swing.JLabel srvLblIP;
+    private javax.swing.JLabel srvLblPort;
+    private javax.swing.JLabel srvLblSize;
+    private javax.swing.JLabel srvLblStatus;
+    private javax.swing.JPanel srvPnl;
+    private javax.swing.JProgressBar srvPrg;
+    private javax.swing.JTextArea srvTxaLog;
+    private javax.swing.JTextField srvTxtClient;
+    private javax.swing.JTextField srvTxtDir;
+    private javax.swing.JTextField srvTxtFile;
+    private javax.swing.JTextField srvTxtIP;
+    private javax.swing.JTextField srvTxtPort;
+    private javax.swing.JTextField srvTxtSize;
+    private javax.swing.JTextField srvTxtStatus;
     // End of variables declaration//GEN-END:variables
 }

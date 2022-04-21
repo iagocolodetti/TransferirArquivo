@@ -5,7 +5,7 @@
     <Property name="defaultCloseOperation" type="int" value="3"/>
     <Property name="title" type="java.lang.String" value="TransferirArquivo"/>
     <Property name="iconImage" type="java.awt.Image" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-      <Connection code="new ImageIcon(getClass().getResource(&quot;/br/com/iagocolodetti/transferirarquivo/resource/icone.png&quot;)).getImage()" type="code"/>
+      <Connection code="new ImageIcon(getClass().getResource(&quot;/br/com/iagocolodetti/transferirarquivo/resource/icon.png&quot;)).getImage()" type="code"/>
     </Property>
     <Property name="maximumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
       <Dimension value="[600, 767]"/>
@@ -72,7 +72,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
       <SubComponents>
-        <Container class="javax.swing.JPanel" name="jPanel1">
+        <Container class="javax.swing.JPanel" name="srvPnl">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="eb" green="eb" red="eb" type="rgb"/>
@@ -94,56 +94,56 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jScrollPane1" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="svLbIP" min="-2" max="-2" attributes="0"/>
+                              <Component id="srvLblIP" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="svTfIP" max="32767" attributes="0"/>
+                              <Component id="srvTxtIP" max="32767" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="svLbPorta" min="-2" max="-2" attributes="0"/>
+                              <Component id="srvLblPort" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="svTfPorta" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="srvTxtPort" min="-2" pref="120" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="svPb" alignment="0" max="32767" attributes="0"/>
+                          <Component id="srvPrg" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="svLbDir" min="-2" max="-2" attributes="0"/>
+                              <Component id="srvLblDir" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                              <Component id="svTfDir" max="32767" attributes="0"/>
+                              <Component id="srvTxtDir" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="svLbTamanho" min="-2" max="-2" attributes="0"/>
+                              <Component id="srvLblSize" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="svTfArquivo" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="srvTxtFile" alignment="1" max="32767" attributes="0"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="svTfTamanho" min="-2" pref="414" max="-2" attributes="0"/>
+                                      <Component id="srvTxtSize" min="-2" pref="414" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                                      <Component id="svCbTipo" min="-2" pref="70" max="-2" attributes="0"/>
+                                      <Component id="srvCmbBytes" min="-2" pref="70" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="svBtSelecionar" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="srvBtnSelect" min="-2" pref="210" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="svCbLote" min="-2" max="-2" attributes="0"/>
+                              <Component id="srvChkBatch" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="svBtEnviar" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="srvBtnSend" min="-2" pref="210" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              <Component id="svBtLigar" min="-2" pref="242" max="-2" attributes="0"/>
+                              <Component id="srvBtnStart" min="-2" pref="242" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="166" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="svLbStatus" min="-2" max="-2" attributes="0"/>
+                              <Component id="srvLblStatus" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="svTfStatus" max="32767" attributes="0"/>
+                              <Component id="srvTxtStatus" max="32767" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="svLbArquivo" min="-2" max="-2" attributes="0"/>
+                                  <Component id="srvLblFile" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="svLbCliente" min="-2" max="-2" attributes="0"/>
+                                      <Component id="srvLblClient" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="svTfCliente" min="-2" pref="441" max="-2" attributes="0"/>
+                                      <Component id="srvTxtClient" min="-2" pref="441" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -158,47 +158,47 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svLbIP" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfIP" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svLbPorta" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfPorta" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvLblIP" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtIP" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvLblPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtPort" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svLbDir" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfDir" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvLblDir" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtDir" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="svBtLigar" min="-2" max="-2" attributes="0"/>
+                      <Component id="srvBtnStart" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svLbCliente" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfCliente" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svLbArquivo" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfArquivo" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvLblClient" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtClient" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svLbTamanho" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfTamanho" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svCbTipo" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvLblFile" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtFile" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svBtSelecionar" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svBtEnviar" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svCbLote" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvLblSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvCmbBytes" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="svLbStatus" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="svTfStatus" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvBtnSelect" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvBtnSend" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvChkBatch" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="srvLblStatus" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="srvTxtStatus" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
-                      <Component id="svPb" min="-2" pref="20" max="-2" attributes="0"/>
+                      <Component id="srvPrg" min="-2" pref="20" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jScrollPane1" pref="349" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -207,7 +207,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="svLbIP">
+            <Component class="javax.swing.JLabel" name="srvLblIP">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -215,7 +215,7 @@
                 <Property name="text" type="java.lang.String" value="IP:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="svLbPorta">
+            <Component class="javax.swing.JLabel" name="srvLblPort">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -223,7 +223,7 @@
                 <Property name="text" type="java.lang.String" value="Porta:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfIP">
+            <Component class="javax.swing.JTextField" name="srvTxtIP">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -233,7 +233,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfPorta">
+            <Component class="javax.swing.JTextField" name="srvTxtPort">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -244,7 +244,7 @@
                 <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
               </AccessibilityProperties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfDir">
+            <Component class="javax.swing.JTextField" name="srvTxtDir">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -253,11 +253,11 @@
                 <Property name="horizontalAlignment" type="int" value="0"/>
               </Properties>
               <Events>
-                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="svTfDirMouseClicked"/>
-                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="svTfDirKeyPressed"/>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="srvTxtDirMouseClicked"/>
+                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="srvTxtDirKeyPressed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="svLbDir">
+            <Component class="javax.swing.JLabel" name="srvLblDir">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -265,7 +265,7 @@
                 <Property name="text" type="java.lang.String" value="Diret&#xf3;rio:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="svBtLigar">
+            <Component class="javax.swing.JButton" name="srvBtnStart">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -273,10 +273,10 @@
                 <Property name="text" type="java.lang.String" value="LIGAR"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="svBtLigarActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="srvBtnStartActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="svLbArquivo">
+            <Component class="javax.swing.JLabel" name="srvLblFile">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -284,7 +284,7 @@
                 <Property name="text" type="java.lang.String" value="Arquivo:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfArquivo">
+            <Component class="javax.swing.JTextField" name="srvTxtFile">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -294,7 +294,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="svLbTamanho">
+            <Component class="javax.swing.JLabel" name="srvLblSize">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -302,7 +302,7 @@
                 <Property name="text" type="java.lang.String" value="Tamanho:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfTamanho">
+            <Component class="javax.swing.JTextField" name="srvTxtSize">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -312,7 +312,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="svCbTipo">
+            <Component class="javax.swing.JComboBox" name="srvCmbBytes">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -328,13 +328,13 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="svCbTipoActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="srvCmbBytesActionPerformed"/>
               </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
-            <Component class="javax.swing.JButton" name="svBtSelecionar">
+            <Component class="javax.swing.JButton" name="srvBtnSelect">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -342,10 +342,10 @@
                 <Property name="text" type="java.lang.String" value="Selecionar Arquivo"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="svBtSelecionarActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="srvBtnSelectActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="svBtEnviar">
+            <Component class="javax.swing.JButton" name="srvBtnSend">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -353,10 +353,10 @@
                 <Property name="text" type="java.lang.String" value="Enviar"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="svBtEnviarActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="srvBtnSendActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="svLbCliente">
+            <Component class="javax.swing.JLabel" name="srvLblClient">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -364,7 +364,7 @@
                 <Property name="text" type="java.lang.String" value="Cliente Conectado:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfCliente">
+            <Component class="javax.swing.JTextField" name="srvTxtClient">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -374,7 +374,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="svLbStatus">
+            <Component class="javax.swing.JLabel" name="srvLblStatus">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -382,7 +382,7 @@
                 <Property name="text" type="java.lang.String" value="Status:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="svTfStatus">
+            <Component class="javax.swing.JTextField" name="srvTxtStatus">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -392,7 +392,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JProgressBar" name="svPb">
+            <Component class="javax.swing.JProgressBar" name="srvPrg">
               <Properties>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="33" green="cc" red="0" type="rgb"/>
@@ -407,7 +407,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTextArea" name="svTALog">
+                <Component class="javax.swing.JTextArea" name="srvTxaLog">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -425,7 +425,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JCheckBox" name="svCbLote">
+            <Component class="javax.swing.JCheckBox" name="srvChkBatch">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -435,7 +435,7 @@
             </Component>
           </SubComponents>
         </Container>
-        <Container class="javax.swing.JPanel" name="jPanel2">
+        <Container class="javax.swing.JPanel" name="cltPnl">
           <Properties>
             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
               <Color blue="eb" green="eb" red="eb" type="rgb"/>
@@ -457,51 +457,51 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Component id="jScrollPane2" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="clLbIP" min="-2" max="-2" attributes="0"/>
+                              <Component id="cltLblIP" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="50" max="-2" attributes="0"/>
-                              <Component id="clTfIP" max="32767" attributes="0"/>
+                              <Component id="cltTxtIP" max="32767" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="clLbPorta" min="-2" max="-2" attributes="0"/>
+                              <Component id="cltLblPort" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Component id="clTfPorta" min="-2" pref="120" max="-2" attributes="0"/>
+                              <Component id="cltTxtPort" min="-2" pref="120" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
-                              <Component id="clBtConectar" min="-2" pref="242" max="-2" attributes="0"/>
+                              <Component id="cltBtnConnect" min="-2" pref="242" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="166" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="clLbDir" min="-2" max="-2" attributes="0"/>
+                              <Component id="cltLblDir" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
-                              <Component id="clTfDir" max="32767" attributes="0"/>
+                              <Component id="cltTxtDir" max="32767" attributes="0"/>
                           </Group>
-                          <Component id="clPb" alignment="0" max="32767" attributes="0"/>
+                          <Component id="cltPrg" alignment="0" max="32767" attributes="0"/>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="clLbTamanho" min="-2" max="-2" attributes="0"/>
+                              <Component id="cltLblSize" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="clTfArquivo" alignment="1" max="32767" attributes="0"/>
+                                  <Component id="cltTxtFile" alignment="1" max="32767" attributes="0"/>
                                   <Group type="102" alignment="1" attributes="0">
-                                      <Component id="clTfTamanho" min="-2" pref="414" max="-2" attributes="0"/>
+                                      <Component id="cltTxtSize" min="-2" pref="414" max="-2" attributes="0"/>
                                       <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                                      <Component id="clCbTipo" min="-2" pref="70" max="-2" attributes="0"/>
+                                      <Component id="cltCmbBytes" min="-2" pref="70" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="clBtSelecionar" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="cltBtnSelect" min="-2" pref="210" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="51" max="-2" attributes="0"/>
-                              <Component id="clCbLote" min="-2" max="-2" attributes="0"/>
+                              <Component id="cltChkBatch" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="clBtEnviar" min="-2" pref="210" max="-2" attributes="0"/>
+                              <Component id="cltBtnSend" min="-2" pref="210" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" attributes="0">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="clLbArquivo" min="-2" max="-2" attributes="0"/>
+                                  <Component id="cltLblFile" min="-2" max="-2" attributes="0"/>
                                   <Group type="102" alignment="0" attributes="0">
-                                      <Component id="clLbStatus" min="-2" max="-2" attributes="0"/>
+                                      <Component id="cltLblStatus" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                                      <Component id="clTfStatus" min="-2" pref="513" max="-2" attributes="0"/>
+                                      <Component id="cltTxtStatus" min="-2" pref="513" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -516,42 +516,42 @@
                   <Group type="102" alignment="0" attributes="0">
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clLbIP" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clTfIP" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clLbPorta" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clTfPorta" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltLblIP" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltTxtIP" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltLblPort" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltTxtPort" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clLbDir" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clTfDir" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltLblDir" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltTxtDir" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="clBtConectar" min="-2" max="-2" attributes="0"/>
+                      <Component id="cltBtnConnect" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clLbArquivo" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clTfArquivo" alignment="3" min="-2" max="-2" attributes="0"/>
-                      </Group>
-                      <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clLbTamanho" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clTfTamanho" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clCbTipo" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltLblFile" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltTxtFile" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clBtSelecionar" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clBtEnviar" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clCbLote" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltLblSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltTxtSize" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltCmbBytes" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="3" attributes="0">
-                          <Component id="clLbStatus" alignment="3" min="-2" max="-2" attributes="0"/>
-                          <Component id="clTfStatus" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltBtnSelect" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltBtnSend" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltChkBatch" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="cltLblStatus" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="cltTxtStatus" alignment="3" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="13" max="-2" attributes="0"/>
-                      <Component id="clPb" min="-2" pref="20" max="-2" attributes="0"/>
+                      <Component id="cltPrg" min="-2" pref="20" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="jScrollPane2" pref="390" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
@@ -560,7 +560,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Component class="javax.swing.JLabel" name="clLbIP">
+            <Component class="javax.swing.JLabel" name="cltLblIP">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -568,7 +568,7 @@
                 <Property name="text" type="java.lang.String" value="IP:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="clTfIP">
+            <Component class="javax.swing.JTextField" name="cltTxtIP">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -576,7 +576,7 @@
                 <Property name="horizontalAlignment" type="int" value="0"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="clLbPorta">
+            <Component class="javax.swing.JLabel" name="cltLblPort">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -584,7 +584,7 @@
                 <Property name="text" type="java.lang.String" value="Porta:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="clTfPorta">
+            <Component class="javax.swing.JTextField" name="cltTxtPort">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -592,7 +592,7 @@
                 <Property name="horizontalAlignment" type="int" value="0"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="clTfDir">
+            <Component class="javax.swing.JTextField" name="cltTxtDir">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -601,11 +601,11 @@
                 <Property name="horizontalAlignment" type="int" value="0"/>
               </Properties>
               <Events>
-                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="clTfDirMouseClicked"/>
-                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="clTfDirKeyPressed"/>
+                <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="cltTxtDirMouseClicked"/>
+                <EventHandler event="keyPressed" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="cltTxtDirKeyPressed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="clLbDir">
+            <Component class="javax.swing.JLabel" name="cltLblDir">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -613,7 +613,7 @@
                 <Property name="text" type="java.lang.String" value="Diret&#xf3;rio:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JButton" name="clBtConectar">
+            <Component class="javax.swing.JButton" name="cltBtnConnect">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -621,10 +621,10 @@
                 <Property name="text" type="java.lang.String" value="CONECTAR"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clBtConectarActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cltBtnConnectActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JLabel" name="clLbArquivo">
+            <Component class="javax.swing.JLabel" name="cltLblFile">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -632,7 +632,7 @@
                 <Property name="text" type="java.lang.String" value="Arquivo:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="clTfArquivo">
+            <Component class="javax.swing.JTextField" name="cltTxtFile">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -642,7 +642,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="clLbTamanho">
+            <Component class="javax.swing.JLabel" name="cltLblSize">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -650,7 +650,7 @@
                 <Property name="text" type="java.lang.String" value="Tamanho:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JTextField" name="clTfTamanho">
+            <Component class="javax.swing.JTextField" name="cltTxtSize">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -660,7 +660,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JComboBox" name="clCbTipo">
+            <Component class="javax.swing.JComboBox" name="cltCmbBytes">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -676,13 +676,13 @@
                 </Property>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clCbTipoActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cltCmbBytesActionPerformed"/>
               </Events>
               <AuxValues>
                 <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
               </AuxValues>
             </Component>
-            <Component class="javax.swing.JButton" name="clBtSelecionar">
+            <Component class="javax.swing.JButton" name="cltBtnSelect">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -690,10 +690,10 @@
                 <Property name="text" type="java.lang.String" value="Selecionar Arquivo"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clBtSelecionarActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cltBtnSelectActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JButton" name="clBtEnviar">
+            <Component class="javax.swing.JButton" name="cltBtnSend">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -701,10 +701,10 @@
                 <Property name="text" type="java.lang.String" value="Enviar"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clBtEnviarActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cltBtnSendActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JTextField" name="clTfStatus">
+            <Component class="javax.swing.JTextField" name="cltTxtStatus">
               <Properties>
                 <Property name="editable" type="boolean" value="false"/>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
@@ -714,7 +714,7 @@
                 <Property name="focusable" type="boolean" value="false"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JLabel" name="clLbStatus">
+            <Component class="javax.swing.JLabel" name="cltLblStatus">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>
@@ -722,7 +722,7 @@
                 <Property name="text" type="java.lang.String" value="Status:"/>
               </Properties>
             </Component>
-            <Component class="javax.swing.JProgressBar" name="clPb">
+            <Component class="javax.swing.JProgressBar" name="cltPrg">
               <Properties>
                 <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="33" green="cc" red="0" type="rgb"/>
@@ -737,7 +737,7 @@
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
               <SubComponents>
-                <Component class="javax.swing.JTextArea" name="clTALog">
+                <Component class="javax.swing.JTextArea" name="cltTxaLog">
                   <Properties>
                     <Property name="editable" type="boolean" value="false"/>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -755,7 +755,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Component class="javax.swing.JCheckBox" name="clCbLote">
+            <Component class="javax.swing.JCheckBox" name="cltChkBatch">
               <Properties>
                 <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
                   <Font name="Tahoma" size="14" style="0"/>

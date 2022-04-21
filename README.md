@@ -11,8 +11,8 @@
 <br>
 # Downloads
 https://github.com/iagocolodetti/TransferirArquivo/releases
-* [TransferirArquivo.jar](https://github.com/iagocolodetti/TransferirArquivo/releases/download/v1.2/TransferirArquivo.jar "TransferirArquivo.jar")
-* [Código-fonte](https://github.com/iagocolodetti/TransferirArquivo/archive/v1.2.zip "v1.2.zip")
+* [TransferirArquivo.jar](https://github.com/iagocolodetti/TransferirArquivo/releases/download/v1.3/TransferirArquivo.jar "TransferirArquivo.jar")
+* [Código-fonte](https://github.com/iagocolodetti/TransferirArquivo/archive/v1.3.zip "v1.3.zip")
 * [Cliente Android](https://github.com/iagocolodetti/TransferirArquivoAndroid/blob/master/README.md#downloads "TransferirArquivoAndroid#Downloads")
 # Descrição
 Projeto desenvolvido com o objetivo de fazer a conexão entre Servidor e Cliente para a transferência de arquivos de maneira bidirecional, ou seja, Servidor e Cliente pode tanto receber quanto enviar arquivos.

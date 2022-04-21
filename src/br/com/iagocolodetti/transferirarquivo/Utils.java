@@ -27,33 +27,33 @@ import javax.swing.JOptionPane;
  */
 public class Utils {
     
-    public static void msgBoxErro(Component component, String mensagem) {
-        JOptionPane.showMessageDialog(component, mensagem, "Erro", JOptionPane.ERROR_MESSAGE);
+    public static void msgBoxError(Component component, String message) {
+        JOptionPane.showMessageDialog(component, message, "Erro", JOptionPane.ERROR_MESSAGE);
     }
     
-    public static String calcularTamanho(String tipo, long tamanhoArquivo) {
-        String tamanho = "";
-        switch (tipo) {
+    public static String bytesTo(long bytes, String bytesTo) {
+        String size = "";
+        switch (bytesTo) {
             case "B":
-                tamanho = String.valueOf(tamanhoArquivo);
+                size = String.valueOf(bytes);
                 break;
             case "KB":
-                tamanho = String.valueOf(tamanhoArquivo / 1024);
+                size = String.valueOf(bytes / 1024);
                 break;
             case "MB":
-                tamanho = String.valueOf(tamanhoArquivo / 1024 / 1024);
+                size = String.valueOf(bytes / 1024 / 1024);
                 break;
             case "GB":
-                tamanho = String.format("%.2f", (double) tamanhoArquivo / 1024 / 1024 / 1024);
+                size = String.format("%.2f", (double) bytes / 1024 / 1024 / 1024);
                 break;
             case "TB":
-                tamanho = String.format("%.2f", (double) tamanhoArquivo / 1024 / 1024 / 1024 / 1024);
+                size = String.format("%.2f", (double) bytes / 1024 / 1024 / 1024 / 1024);
                 break;
         }
-        return tamanho;
+        return size;
     }
     
-    public static String selecionarDir(Component component) {
+    public static String selectDir(Component component) {
         String dir = "";
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
