@@ -118,7 +118,7 @@ public class MainGUI extends javax.swing.JFrame {
         }
     }
 
-    // <editor-fold defaultstate="collapsed" desc="Métodos para o servidor">
+    // <editor-fold defaultstate="collapsed" desc="Server methods">
     public void srvAddFiles(List<File> files, long totalSize) {
         if (files != null && !files.isEmpty()) {
             this.srvFiles = files;
@@ -198,7 +198,7 @@ public class MainGUI extends javax.swing.JFrame {
     }
     // </editor-fold>
 
-    // <editor-fold defaultstate="collapsed" desc="Métodos para o cliente">
+    // <editor-fold defaultstate="collapsed" desc="Client methods">
     public void cltAddFiles(List<File> files, long totalSize) {
         if (files != null && !files.isEmpty()) {
             this.cltFiles = files;
@@ -852,7 +852,7 @@ public class MainGUI extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    // <editor-fold defaultstate="collapsed" desc="Ações para o servidor">
+    // <editor-fold defaultstate="collapsed" desc="Server actions">
     private void srvBtnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_srvBtnStartActionPerformed
         if (srvBtnStart.getText().equals("LIGAR")) {
             srvStart();
@@ -930,7 +930,7 @@ public class MainGUI extends javax.swing.JFrame {
         saveProperties();
     }//GEN-LAST:event_formWindowClosing
 
-    // <editor-fold defaultstate="collapsed" desc="Ações para o cliente">
+    // <editor-fold defaultstate="collapsed" desc="Client actions">
     private void cltTxtDirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cltTxtDirMouseClicked
         if (cltBtnConnect.getText().equals("CONECTAR")) {
             cltTxtDir.setText(Utils.selectDir(this));

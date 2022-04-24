@@ -94,7 +94,7 @@ public class AddFiles extends javax.swing.JFrame {
     }
 
     /**
-     * Creates new form AddArquivos
+     * Creates new form AddFiles
      */
     private AddFiles() {
         initComponents();
