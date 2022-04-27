@@ -172,7 +172,7 @@ public class AddFiles extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("TransferirArquivo - Adicionar Arquivos");
         setFocusable(false);
-        setIconImage(new ImageIcon(getClass().getResource("/br/com/iagocolodetti/transferirarquivo/resource/icone.png")).getImage());
+        setIconImage(new ImageIcon(getClass().getResource("/br/com/iagocolodetti/transferirarquivo/resource/icon.png")).getImage());
         setMinimumSize(new java.awt.Dimension(600, 767));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
